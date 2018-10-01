@@ -1,6 +1,7 @@
 (ns camunda-cli-tool.process-instance
   (:require [clojure.data.json :as j]
-            [camunda-cli-tool.http :as http]))
+            [camunda-cli-tool.http :as http]
+            [camunda-cli-tool.util :as util]))
 
 (def rest-endpoint "process-instance")
 
@@ -9,18 +10,12 @@
 (defn show [pinst]
   (str (:id pinst)))
 
-(defn keywordize [m]
-  (into {}
-        (map vector
-                (map keyword (keys m))
-                (vals m))))
-
 (defn json->ProcessInstance [j]
-  (select-keys (keywordize j) [:id]))
+  (select-keys (util/keywordize j) [:id :definitionId]))
 
 (defn list []
   (map json->ProcessInstance (j/read-str (:body (http/make-rest-call rest-endpoint)))))
 
 (defn show-process-instances []
-  (doseq [x (list)]
-    (println (:id x))))
+  (doseq [pinst (list)]
+    (println (show pinst))))

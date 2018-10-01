@@ -13,6 +13,7 @@
   (println (apply str (repeat 80 "-")))
   (println "(d) List Process Definitions")
   (println "(i) List Active Process Instances")
+  (println "(q) Quit")
   (print m)
   (let [l (read-line)
         c (first l)]
@@ -24,5 +25,5 @@
         (repl m)))))
 
 (defn run []
-  (print "Use 'q' for quit")
-  (repl "? "))
+  (println "Use 'q' for quit")
+  (repl " "))
