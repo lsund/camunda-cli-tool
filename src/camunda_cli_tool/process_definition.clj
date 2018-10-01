@@ -9,16 +9,18 @@
 
 (defrecord ProcessDefinition [id key name version])
 
-(defn show [pdef]
-  (let [padding (apply str (repeat (- 69 (count (:id pdef))) \. ))]
-    (str (:id pdef) padding " version: " (:version pdef))))
+(defn show [{:keys [id version]}]
+  (str id (util/padding-string id padding-space) " version: " version))
 
 (defn json->ProcessDefinition [j]
   (select-keys (util/keywordize j) [:id :key :name :version]))
 
-(defn list []
+(defn list-all []
   (map json->ProcessDefinition (j/read-str (:body (http/make-rest-call rest-endpoint)))))
 
+(defn list-unique []
+  ())
+
 (defn show-unique-process-definitions []
-  (doseq [pdef (list)]
+  (doseq [pdef (list-all)]
     (println (show pdef))))
