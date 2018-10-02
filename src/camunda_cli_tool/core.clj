@@ -1,6 +1,7 @@
 (ns camunda-cli-tool.core
   (:require [camunda-cli-tool.process-definition :as pdef]
-            [camunda-cli-tool.process-instance :as pinst]))
+            [camunda-cli-tool.process-instance :as pinst])
+  (:gen-class))
 
 (def default-keymap
   {\d {:description "List Process Definitions" :next (pdef/most-recent-keymap)}
