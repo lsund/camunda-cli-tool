@@ -1,7 +1,8 @@
 (ns camunda-cli-tool.process-instance
   (:require [clojure.data.json :as j]
             [camunda-cli-tool.http :as http]
-            [camunda-cli-tool.util :as util]))
+            [camunda-cli-tool.util :as util]
+            [medley.core :refer [map-keys]]))
 
 (def padding-space 80)
 
@@ -13,7 +14,7 @@
   (str id (util/padding-string id padding-space)))
 
 (defn json->ProcessInstance [j]
-  (select-keys (util/keywordize j) [:id :definitionId]))
+  (select-keys (map-keys keyword j) [:id :definitionId]))
 
 (defn list-all []
   (map json->ProcessInstance (j/read-str (:body (http/make-rest-call rest-endpoint)))))
