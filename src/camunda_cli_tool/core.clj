@@ -4,7 +4,7 @@
 
 (defn make-action [c]
   (case c
-    \d (pdef/show-unique-process-definitions)
+    \d (pdef/show-most-recent-definitions)
     \i (pinst/show-process-instances)
     :default))
 
