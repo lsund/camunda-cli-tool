@@ -42,10 +42,11 @@
 ;; TODO has to update second argument of name->char
 ;; And check if name->char was nil. In that case assign an integer instead
 (defn most-recent-keymap []
-  (reduce
-   (fn [acc {:keys [key name version]}]
-     (assoc acc
-            (name->char name [])
-            {:description name :function start-process! :args [key]}))
-   {}
-   (list-most-recent)))
+  (let [keymap (reduce
+                (fn [acc {:keys [key name version]}]
+                  (assoc acc
+                         (name->char name [])
+                         {:description name :function start-process! :args [key]}))
+                {}
+                (list-most-recent))]
+    (assoc keymap :title "Start Process Definition")))

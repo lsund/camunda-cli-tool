@@ -4,21 +4,28 @@
   (:gen-class))
 
 (def default-keymap
-  {\d {:description "List Process Definitions" :next (pdef/most-recent-keymap)}
+  {:title "Main Menu"
+   \d {:description "List Process Definitions" :next (pdef/most-recent-keymap)}
    \i {:description "List Active Process Instances" :next (pinst/keymap)}
    \q {:description "Quit" :next nil}})
 
-(defn show-keymap [keymap]
+(defn show-title [title]
+  (let [padding (apply str (take (quot (- 80 (count title)) 2) (repeat \.)))]
+    (str padding title padding)))
+
+(defn print-keymap [keymap]
+  (println (show-title (:title keymap)))
   (doseq [[x o] keymap]
     (cond
-        (char? x) (printf "(%c) %s\n" x (:description o))
-        (number? x) (printf "(%d) %s\n" x (:description o))
-        :default (throw (Exception. (str "Unknown type: " (type x)))))))
+      (= :title x) nil
+      (char? x) (printf "(%c) %s\n" x (:description o))
+      (number? x) (printf "(%d) %s\n" x (:description o))
+      :default (throw (Exception. (str "Unknown type: " (type x)))))))
 
 (defn repl
   [keymap]
   (println (apply str (repeat 80 "-")))
-  (show-keymap keymap)
+  (print-keymap keymap)
   (flush)
   (let [l (read-line)
         c (first l)]

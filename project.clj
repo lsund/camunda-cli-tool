@@ -1,8 +1,6 @@
 (defproject camunda-cli-tool "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :description "A tool for quickly interacting with camunda through the command line."
+  :url "https://github.com/lsund/camunda-cli-tool"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.json "0.2.6"]
                  [medley "1.0.0"]
