@@ -20,6 +20,15 @@
 (defn list-all []
   (map json->ProcessInstance (j/read-str (:body (http/rest-get rest-endpoint)))))
 
+;; (1) When a process was deleted, you should directly go back
+;; (2) When you go back, you go to the previous state. Should probable be a way to refresh
+(defn stop-process! [id]
+  (http/rest-delete (str rest-endpoint "/" id)))
+
+(defn manage [id]
+  {:title "Manage Process Instance"
+   :children {"s" {:description "Stop Process Instance" :function stop-process! :args [id]}}})
+
 (defn make-root [instances]
   {:title "Inspect Process"
    :children instances})
@@ -28,8 +37,9 @@
   "Creates a sorted map of [i m] k/v pairs, where i is a unique integer and m is the map that
    corresponds to the process instance. pred is a predicate function that is used for filtering
    elements based on (list-all)"
-  (into (sorted-map) (zipmap (range)
-                              (filter pred (map #(assoc % :description (:id %)) (list-all))))))
+  (into (sorted-map) (zipmap (map str (range))
+                             (filter pred (map #(merge % {:description (:id %)
+                                                          :next manage :args [(:id %)]}) (list-all))))))
 
 (defn root
   "If no arguments are given, return a node with all process instances.

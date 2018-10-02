@@ -13,3 +13,6 @@
   (client/post (rest-url resource)
                {:form-params {:variables variables}
                 :content-type :json}))
+
+(defn rest-delete [resource]
+  (client/delete (rest-url resource)))

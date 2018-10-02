@@ -20,7 +20,8 @@
        string/lower-case
        util/filter-alphas
        (reduce (fn [acc c] (if (some #{c} taken) acc (conj acc c))) [])
-       first))
+       first
+       str))
 
 (defn start-process! [key]
   (http/rest-post (str rest-endpoint
@@ -42,8 +43,8 @@
 
 (defn manage [id key]
   {:title "Manage Process"
-   :children {\x {:description "Start Process" :function start-process! :args [key]}
-              \s {:description "Stop Process" :next pinst/root :args [id]}}})
+   :children {"x" {:description "Start Process Instance" :function start-process! :args [key]}
+              "l" {:description "List Process Instances" :next pinst/root :args [id]}}})
 
 ;; TODO has to update second argument of name->char
 ;; And check if name->char was nil. In that case assign an integer instead
