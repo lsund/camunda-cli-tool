@@ -19,7 +19,7 @@
 (defn list-all []
   (map json->ProcessInstance (j/read-str (:body (http/rest-get rest-endpoint)))))
 
-(defn keymap []
+(defn root []
   (sort-by first
            (into {}
                  (map vector

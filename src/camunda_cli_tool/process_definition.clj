@@ -41,7 +41,7 @@
 
 ;; TODO has to update second argument of name->char
 ;; And check if name->char was nil. In that case assign an integer instead
-(defn most-recent-keymap []
+(defn root []
   (let [keymap (reduce
                 (fn [acc {:keys [key name version]}]
                   (assoc acc

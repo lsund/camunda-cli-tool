@@ -3,18 +3,18 @@
             [camunda-cli-tool.process-instance :as pinst])
   (:gen-class))
 
-(def default-keymap
+(def root
   {:title "Main Menu"
-   \d {:description "List Process Definitions" :next (pdef/most-recent-keymap)}
-   \i {:description "List Active Process Instances" :next (pinst/keymap)}})
+   \d {:description "List Process Definitions" :next (pdef/root)}
+   \i {:description "List Active Process Instances" :next (pinst/root)}})
 
 (defn show-title [title]
   (let [padding (apply str (take (quot (- 80 (count title)) 2) (repeat \.)))]
     (str padding title padding)))
 
-(defn print-keymap [keymap]
-  (println (show-title (:title keymap)))
-  (doseq [[x o] keymap]
+(defn print-node [node]
+  (println (show-title (:title node)))
+  (doseq [[x o] node]
     (cond
       (= :title x) nil
       (char? x) (printf "(%c) %s\n" x (:description o))
@@ -23,30 +23,35 @@
   (println "(b) Back")
   (println "(q) Quit"))
 
+(defn forward-node [c node nodes]
+  (if-let [child (get-in node [c :next])]
+    (repl (conj nodes child))
+    (let [fun (get-in node [c :function])
+          args (get-in node [c :args])]
+      (println "Result: " (apply fun args))
+      (repl nodes))))
+
+(defn backward-node [nodes]
+  (if-let [previous (next nodes)]
+    (repl previous)
+    (repl nodes)))
+
 (defn repl
-  [keymaps]
-  (let [keymap (first keymaps)]
+  [nodes]
+  (let [node (first nodes)]
     (println (apply str (repeat 80 "-")))
-    (print-keymap keymap)
+    (print-node node)
     (flush)
     (let [l (read-line)
           c (first l)]
       (case c
         \q (println "Bye")
-        \b (if-let [previous (next keymaps)]
-             (repl previous)
-             (repl keymaps))
-        (do
-          (if-let [new-keymap (get-in keymap [c :next])]
-            (repl (conj keymaps new-keymap))
-            (let [fun (get-in keymap [c :function])
-                  args (get-in keymap [c :args])]
-              (println "Result: " (apply fun args))
-              (repl keymaps))))))))
+        \b (backward-node nodes)
+        (forward-node c node nodes)))))
 
 (defn run []
   (println "Use the keys in (brackets) to navigate.")
-  (repl (list default-keymap)))
+  (repl (list root)))
 
 (defn -main [& args]
   (run))
