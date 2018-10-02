@@ -20,10 +20,11 @@
   (map json->ProcessInstance (j/read-str (:body (http/rest-get rest-endpoint)))))
 
 (defn keymap []
-  (into {}
-        (map vector
-             (range)
-             (map (fn [{:keys [id]}] {:description id :command nil}) (list-all)))))
+  (sort-by first
+           (into {}
+                 (map vector
+                      (range)
+                      (map (fn [{:keys [id]}] {:description id :command nil}) (list-all))))))
 
 (defn show-process-instances []
   (doseq [pinst (list-all)]
