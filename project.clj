@@ -7,4 +7,5 @@
                  [org.clojure/data.json "0.2.6"]
                  [medley "1.0.0"]
                  [clj-http "3.9.1"]
-                 [cheshire "5.8.1"]])
+                 [cheshire "5.8.1"]]
+  :main camunda-cli-tool.main)

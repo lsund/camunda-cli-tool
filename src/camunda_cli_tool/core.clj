@@ -34,3 +34,6 @@
 (defn run []
   (println "Use 'q' for quit")
   (repl default-keymap))
+
+(defn -main [& args]
+  (run))
