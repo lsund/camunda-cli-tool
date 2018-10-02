@@ -3,9 +3,9 @@
             [camunda-cli-tool.process-instance :as pinst]))
 
 (def default-keymap
-  {\d {:description "List Process Definitions" :command (pdef/most-recent-keymap)}
-   \i {:description "List Active Process Instances" :command (pinst/keymap)}
-   \q {:description "Quit" :command nil}})
+  {\d {:description "List Process Definitions" :next (pdef/most-recent-keymap)}
+   \i {:description "List Active Process Instances" :next (pinst/keymap)}
+   \q {:description "Quit" :next nil}})
 
 (defn show-keymap [keymap]
   (doseq [[x o] keymap]
@@ -24,9 +24,12 @@
     (if (= c \q)
       (println "Bye")
       (do
-        (if-let [new-keymap (get-in keymap [c :command])]
+        (if-let [new-keymap (get-in keymap [c :next])]
           (repl new-keymap)
-          (println "No command associated with that function."))))))
+          (let [fun (get-in keymap [c :function])
+                args (get-in keymap [c :args])]
+            (println "Result: " (apply fun args))
+            (repl keymap)))))))
 
 (defn run []
   (println "Use 'q' for quit")

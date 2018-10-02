@@ -17,7 +17,7 @@
   (select-keys (map-keys keyword j) [:id :definitionId]))
 
 (defn list-all []
-  (map json->ProcessInstance (j/read-str (:body (http/make-rest-call rest-endpoint)))))
+  (map json->ProcessInstance (j/read-str (:body (http/rest-get rest-endpoint)))))
 
 (defn keymap []
   (into {}

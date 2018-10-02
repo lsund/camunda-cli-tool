@@ -9,21 +9,30 @@
 
 (def rest-endpoint "process-definition")
 
+(def default-variables {:fruit {:value "banana" :type "String"}})
+
 (defrecord ProcessDefinition [id key name version])
 
 (defn name->char [name taken]
   (->> (string/split name #"/")
        last
        string/lower-case
-       util/remove-whitespace
+       util/filter-alphas
        (reduce (fn [acc c] (if (some #{c} taken) acc (conj acc c))) [])
        first))
+
+(defn start-process! [key]
+  (http/rest-post (str rest-endpoint
+                       "/" "key"
+                       "/" key
+                       "/" "start")
+                  default-variables))
 
 (defn json->ProcessDefinition [j]
   (select-keys (map-keys keyword j) [:id :key :name :version]))
 
 (defn list-all []
-  (map json->ProcessDefinition (j/read-str (:body (http/make-rest-call rest-endpoint)))))
+  (map json->ProcessDefinition (j/read-str (:body (http/rest-get rest-endpoint)))))
 
 (defn list-most-recent []
   (->> (list-all)
@@ -31,9 +40,12 @@
        (distinct-by (fn [{:keys [key]}] key))))
 
 ;; TODO has to update second argument of name->char
+;; And check if name->char was nil. In that case assign an integer instead
 (defn most-recent-keymap []
   (reduce
-   (fn [acc {:keys [name version]}]
-     (assoc acc (name->char name []) {:description name :command nil}))
+   (fn [acc {:keys [key name version]}]
+     (assoc acc
+            (name->char name [])
+            {:description name :function start-process! :args [key]}))
    {}
    (list-most-recent)))

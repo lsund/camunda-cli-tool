@@ -6,4 +6,5 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.json "0.2.6"]
                  [medley "1.0.0"]
-                 [clj-http "3.9.1"]])
+                 [clj-http "3.9.1"]
+                 [cheshire "5.8.1"]])
