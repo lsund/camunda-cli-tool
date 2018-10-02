@@ -19,6 +19,12 @@
 (defn list-all []
   (map json->ProcessInstance (j/read-str (:body (http/make-rest-call rest-endpoint)))))
 
+(defn keymap []
+  (into {}
+        (map vector
+             (range)
+             (map (fn [{:keys [id]}] {:description id :command nil}) (list-all)))))
+
 (defn show-process-instances []
   (doseq [pinst (list-all)]
     (println (show pinst))))
