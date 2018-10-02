@@ -1,5 +1,6 @@
 (ns camunda-cli-tool.process-definition
   (:require [clojure.data.json :as j]
+            [camunda-cli-tool.process-instance :as pinst]
             [camunda-cli-tool.http :as http]
             [camunda-cli-tool.util :as util]
             [clojure.string :as string]
@@ -39,14 +40,19 @@
        (sort-by :version >)
        (distinct-by (fn [{:keys [key]}] key))))
 
+(defn manage [id key]
+  {:title "Manage Process"
+   :children {\x {:description "Start Process" :function start-process! :args [key]}
+              \s {:description "Stop Process" :next pinst/root :args [id]}}})
+
 ;; TODO has to update second argument of name->char
 ;; And check if name->char was nil. In that case assign an integer instead
 (defn root []
-  (let [keymap (reduce
-                (fn [acc {:keys [key name version]}]
-                  (assoc acc
-                         (name->char name [])
-                         {:description name :function start-process! :args [key]}))
-                {}
-                (list-most-recent))]
-    (assoc keymap :title "Start Process Definition")))
+  {:title "Select Process Definition"
+   :children (reduce
+              (fn [acc {:keys [id key name version]}]
+                (assoc acc
+                       (name->char name [\b \q])
+                       {:description name :next manage :args [id key]}))
+              {}
+              (list-most-recent))})
