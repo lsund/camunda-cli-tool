@@ -1,7 +1,8 @@
 (ns camunda-cli-tool.process-definition
   (:require [clojure.data.json :as j]
-            [camunda-cli-tool.process-instance :as pinst]
+            [camunda-cli-tool.config :as config]
             [camunda-cli-tool.http :as http]
+            [camunda-cli-tool.process-instance :as pinst]
             [camunda-cli-tool.util :as util]
             [clojure.string :as string]
             [medley.core :refer [map-keys distinct-by]]))
@@ -9,8 +10,6 @@
 (def padding-space 65)
 
 (def rest-endpoint "process-definition")
-
-(def default-variables {:fruit {:value "banana" :type "String"}})
 
 (defrecord ProcessDefinition [id key name version])
 
@@ -24,11 +23,12 @@
        str))
 
 (defn start-process! [key]
-  (http/rest-post (str rest-endpoint
-                       "/" "key"
-                       "/" key
-                       "/" "start")
-                  default-variables))
+  (let [resp (http/rest-post (str rest-endpoint
+                                   "/" "key"
+                                   "/" key
+                                   "/" "start")
+                             (config/load-variables key))]
+    (:status resp)))
 
 (defn json->ProcessDefinition [j]
   (select-keys (map-keys keyword j) [:id :key :name :version]))

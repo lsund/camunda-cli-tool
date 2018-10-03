@@ -15,14 +15,16 @@
   (str id (util/padding-string id padding-space)))
 
 (defn json->ProcessInstance [j]
-  (rename-keys  (select-keys (map-keys keyword j) [:id :definitionId]) {:definitionId :definition-id}))
+  (rename-keys  (select-keys (map-keys keyword j) [:id :definitionId])
+                {:definitionId :definition-id}))
 
 (defn list-all []
   (map json->ProcessInstance (j/read-str (:body (http/rest-get rest-endpoint)))))
 
 ;; (1) When a process was deleted, you should directly go back
 (defn stop-process! [id]
-  (http/rest-delete (str rest-endpoint "/" id)))
+  {:value (:status (http/rest-delete (str rest-endpoint "/" id)))
+   :rebound true})
 
 (defn manage [id]
   {:title "Manage Process Instance"

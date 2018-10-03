@@ -15,27 +15,46 @@
   (let [padding (apply str (take (quot (- screen-width (count title)) 2) (repeat \.)))]
     (str padding title padding)))
 
-(defn print-node [node]
-  (println (show-title (:title node)))
-  (doseq [[x o] (:children node)]
-    (cond
-      (= :title x) nil
-      (string? x) (printf "(%s) %s\n" x (:description o))
-      :default (throw (Exception. (str "Should not happen. Type: " (type x))))))
+(defn print-node [{:keys [title children]}]
+  (println (show-title title))
+  (if (not-empty children)
+    (doseq [[x o] children]
+      (cond
+        (= :title x) nil
+        (string? x) (printf "(%s) %s\n" x (:description o))
+        :default (throw (Exception. (str "Should not happen. Type: " (type x))))))
+    (println "Nothing to display"))
+  (println)
   (println "(b) Back")
   (println "(m) Main Menu")
   (println "(q) Quit")
   (println "(r) Refresh"))
 
 (defn forward-node [k node nodes]
+  "Tries to advance down the action tree.
+   If the current node contains a child for the given key k, then read its node and continue.
+   If the current node contains a function and arguments for the given key k,
+   then this is a leaf-node and the function is called with the arguments. The function should
+   return a map containing the :value and :rebound keys. :value specified the return value of
+   the function call and :rebound specifies weather to return to the previous menu in the
+   application or not.
+   For example, when invoking the function stop-process!, the process is deleted from the
+   application. Then, the correct action is to return to the previous menu that lists all
+   current processes.
+   "
   (let [child (get-in node [:children k :next])
         fun (get-in node [:children k :function])
         args (get-in node [:children k :args])]
-    (if child
-      (repl (conj nodes (apply child args))) ;
-      (do
-        (println "Result: " (apply fun args))
-        (repl nodes)))))
+    (println)
+    (cond
+      child (repl (conj nodes (apply child args)))
+      fun (let [result (apply fun args)]
+            (println "Result: " (:value result))
+            (if (:rebound result)
+              (repl (next nodes))
+              (repl nodes)))
+      :default (do (println "Unknown command: " k)
+                   (repl nodes)))))
 
 (defn backward-node [k nodes]
   (if-let [previous (next nodes)]
