@@ -26,9 +26,15 @@
    :key "et"
    :children tasks})
 
-(defn mergefun [{:keys [id process-definition-id process-instance-id] :as task}]
+(defn mergefun [{:keys [id] :as task}]
   (merge task {:description id
-               :next manage :args [id]}))
+               :next manage
+               :args [id]}))
 
-(defn root []
-  (make-root (util/associate (constantly true) mergefun (list-all))))
+(defn root
+  ([]
+   (make-root (util/associate (constantly true) mergefun (list-all))))
+  ([pinst-id]
+   (make-root (util/associate (fn [task] (= (:process-instance-id task) pinst-id))
+                              mergefun
+                              (list-all)))))

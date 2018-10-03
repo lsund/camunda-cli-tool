@@ -3,6 +3,7 @@
             [clojure.set :refer [rename-keys]]
             [camunda-cli-tool.http :as http]
             [camunda-cli-tool.util :as util]
+            [camunda-cli-tool.external-task :as task]
             [medley.core :refer [map-keys]]))
 
 (def rest-endpoint "process-instance")
@@ -33,7 +34,10 @@
 (defn manage [id]
   {:title (str "Manage Process Instance: " id)
    :children {"s" {:description "Stop Process Instance" :function stop-process! :args [id]}
-              "v" {:description "Inspect variables" :function inspect-variables :args [id]}}})
+              "v" {:description "Inspect variables" :function inspect-variables :args [id]}
+              "l" {:description "List external tasks for this instance"
+                   :next task/root
+                   :args [id]}}})
 
 (defn make-root [instances]
   {:title "Inspect Process"

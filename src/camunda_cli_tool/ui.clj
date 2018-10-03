@@ -1,6 +1,7 @@
 (ns camunda-cli-tool.ui
   (:require [camunda-cli-tool.process-definition :as pdef]
-            [camunda-cli-tool.process-instance :as pinst]))
+            [camunda-cli-tool.process-instance :as pinst]
+            [camunda-cli-tool.external-task :as task]))
 
 (def screen-width 120)
 
@@ -8,8 +9,9 @@
 
 (def root
   {:title "Main Menu"
-   :children {"pd" {:description "List Process Definitions" :next pdef/root}
-              "pi" {:description "List Active Process Instances" :next pinst/root}}})
+   :children {"pd" {:description "List process definitions" :next pdef/root}
+              "pi" {:description "List active process instances" :next pinst/root}
+              "et" {:description "List available external tasks" :next task/root}}})
 
 (defn show-title [title]
   (let [padding (apply str (take (quot (- screen-width (count title)) 2) (repeat \.)))]
