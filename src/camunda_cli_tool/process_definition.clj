@@ -7,17 +7,10 @@
             [clojure.string :as string]
             [medley.core :refer [map-keys distinct-by]]))
 
-(def padding-space 65)
-
 (def rest-endpoint "process-definition")
 
-(defrecord ProcessDefinition [id key name version])
-
-(defn json->ProcessDefinition [j]
-  (select-keys (map-keys keyword j) [:id :key :name :version]))
-
 (defn list-all []
-  (map json->ProcessDefinition (j/read-str (:body (http/rest-get rest-endpoint)))))
+  (map (partial util/json->instance-map [:id :key :name :version]) (j/read-str (:body (http/rest-get rest-endpoint)))))
 
 (defn list-most-recent []
   (->> (list-all)

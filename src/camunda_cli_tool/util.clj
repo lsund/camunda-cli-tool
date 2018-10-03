@@ -1,4 +1,8 @@
-(ns camunda-cli-tool.util)
+(ns camunda-cli-tool.util
+  (:require
+   [camel-snake-kebab.core :refer [->kebab-case]]
+   [clojure.set :refer [rename-keys]]
+   [medley.core :refer [map-keys]]))
 
 (defn parse-int [s]
   (Integer. (re-find  #"\d+" (str s))))
@@ -22,3 +26,7 @@
   elements, also based on xs"
   (into (sorted-map) (zipmap (map str (range))
                              (filter pred (map mergefun xs)))))
+
+(defn json->instance-map [keyseq json]
+  (rename-keys (select-keys (map-keys keyword json) keyseq)
+               (zipmap keyseq (map ->kebab-case keyseq))))

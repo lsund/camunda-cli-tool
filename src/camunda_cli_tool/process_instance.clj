@@ -5,18 +5,7 @@
             [camunda-cli-tool.util :as util]
             [medley.core :refer [map-keys]]))
 
-(def padding-space 80)
-
 (def rest-endpoint "process-instance")
-
-(defrecord ProcessInstance [id definition-id])
-
-(defn show [{:keys [id]}]
-  (str id (util/padding-string id padding-space)))
-
-(defn json->ProcessInstance [j]
-  (rename-keys  (select-keys (map-keys keyword j) [:id :definitionId])
-                {:definitionId :definition-id}))
 
 (defn add-historic-data [pinst]
   (let [history (j/read-str (:body (http/rest-get (str "history"
@@ -27,7 +16,8 @@
             :definition-name (get history "processDefinitionName")})))
 
 (defn list-all []
-  (let [active (map json->ProcessInstance (j/read-str (:body (http/rest-get rest-endpoint))))]
+  (let [active (map (partial util/json->instance-map [:id :definitionId])
+                    (j/read-str (:body (http/rest-get rest-endpoint))))]
     (map add-historic-data active)))
 
 (defn stop-process! [id]
