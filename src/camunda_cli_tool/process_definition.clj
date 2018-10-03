@@ -43,7 +43,7 @@
 
 (defn manage [id key]
   {:title "Manage Process"
-   :children {"x" {:description "Start Process Instance" :function start-process! :args [key]}
+   :children {"s" {:description "Start Process Instance" :function start-process! :args [key]}
               "l" {:description "List Process Instances" :next pinst/root :args [id]}}})
 
 ;; TODO has to update second argument of name->char

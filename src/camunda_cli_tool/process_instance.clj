@@ -21,7 +21,6 @@
   (map json->ProcessInstance (j/read-str (:body (http/rest-get rest-endpoint)))))
 
 ;; (1) When a process was deleted, you should directly go back
-;; (2) When you go back, you go to the previous state. Should probable be a way to refresh
 (defn stop-process! [id]
   (http/rest-delete (str rest-endpoint "/" id)))
 
@@ -31,6 +30,7 @@
 
 (defn make-root [instances]
   {:title "Inspect Process"
+   :key "pi"
    :children instances})
 
 (defn associate [pred]
