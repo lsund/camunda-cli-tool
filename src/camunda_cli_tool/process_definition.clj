@@ -59,8 +59,5 @@
   (merge pdef {:description name
                :next manage :args [id key name]}))
 
-(defn root
-  "If no arguments are given, return a node with all process instances.
-   If one argument is given, then filter on process instances matching this definition-id."
-  ([]
-   (make-root (util/associate (constantly true) mergefun (list-most-recent)))))
+(defn root []
+  (make-root (util/associate (constantly true) mergefun (list-most-recent))))
