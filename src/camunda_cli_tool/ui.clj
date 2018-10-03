@@ -17,6 +17,7 @@
 
 (defn print-node [{:keys [title children]}]
   (println (show-title title))
+  (println)
   (if (not-empty children)
     (doseq [[x o] children]
       (cond

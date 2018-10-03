@@ -1,1 +1,2 @@
-{"process.lsund.buy_fruit.buy-fruit" {:fruit {:value "banana" :type "String"}}}
+{"process.lsund.buy_fruit.buy-fruit" {:default {:fruit {:value "banana" :type "String"}}
+                                      :required [:fruit]}}

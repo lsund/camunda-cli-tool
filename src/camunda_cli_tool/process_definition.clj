@@ -13,23 +13,6 @@
 
 (defrecord ProcessDefinition [id key name version])
 
-(defn name->char [name taken]
-  (->> (string/split name #"/")
-       last
-       string/lower-case
-       util/filter-alphas
-       (reduce (fn [acc c] (if (some #{c} taken) acc (conj acc c))) [])
-       first
-       str))
-
-(defn start-process! [key]
-  (let [resp (http/rest-post (str rest-endpoint
-                                   "/" "key"
-                                   "/" key
-                                   "/" "start")
-                             (config/load-variables key))]
-    (:status resp)))
-
 (defn json->ProcessDefinition [j]
   (select-keys (map-keys keyword j) [:id :key :name :version]))
 
@@ -41,19 +24,54 @@
        (sort-by :version >)
        (distinct-by (fn [{:keys [key]}] key))))
 
+(defn start-process!
+  ([key]
+   (start-process! key (config/load-default-variables key)))
+  ([key variables]
+   (let [resp (http/rest-post (str rest-endpoint
+                                   "/" "key"
+                                   "/" key
+                                   "/" "start")
+                              variables)]
+     {:value (:status resp)
+      :rebound false})))
+
+(defn read-variables-and-start-process! [key]
+  (let [variables (atom {})]
+    (doseq [k (config/required-keys key)]
+      (println "Enter value for: " k)
+      (let [v (read-line)]
+        (swap! variables assoc k {:value v :type "String"})))
+    (start-process! key @variables)))
+
 (defn manage [id key]
   {:title "Manage Process"
-   :children {"s" {:description "Start Process Instance" :function start-process! :args [key]}
-              "l" {:description "List Process Instances" :next pinst/root :args [id]}}})
+   :children {"s" {:description "Start process instance with default variables"
+                   :function start-process!
+                   :args [key]}
+              "v" {:description "Start process instance with given variables"
+                   :function read-variables-and-start-process!
+                   :args [key]}
+              "l" {:description "List Process Instances"
+                   :next pinst/root
+                   :args [id]}}})
 
-;; TODO has to update second argument of name->char
-;; And check if name->char was nil. In that case assign an integer instead
-(defn root []
-  {:title "Select Process Definition"
-   :children (reduce
-              (fn [acc {:keys [id key name version]}]
-                (assoc acc
-                       (name->char name [\b \q])
-                       {:description name :next manage :args [id key]}))
-              {}
-              (list-most-recent))})
+(defn make-root [instances]
+  {:title "Selcet Process Definition"
+   :key "pd"
+   :children instances})
+
+(defn associate [pred]
+  "Creates a sorted map of k/v pairs, where the key is a unique integer and the value is a map
+   corresponding to the process instance. pred is a predicate function that is used for filtering
+   elements based on (list-all)"
+  (into (sorted-map) (zipmap (map str (range))
+                             (filter pred (map #(merge % {:description (:name %)
+                                                          :next manage :args [(:id %) (:key %)]})
+                                               (list-most-recent))))))
+
+(defn root
+  "If no arguments are given, return a node with all process instances.
+   If one argument is given, then filter on process instances matching this definition-id."
+  ([]
+   (make-root (associate (constantly true)))))
