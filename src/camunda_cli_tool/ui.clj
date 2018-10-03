@@ -2,7 +2,7 @@
   (:require [camunda-cli-tool.process-definition :as pdef]
             [camunda-cli-tool.process-instance :as pinst]))
 
-(def screen-width 80)
+(def screen-width 120)
 
 (def repl)
 
@@ -72,7 +72,7 @@
 
 (defn repl [nodes]
   (let [node (first nodes)]
-    (println (apply str (repeat 80 "-")))
+    (println (apply str (repeat screen-width "-")))
     (print-node node)
     (flush)
     (let [k (read-line)]

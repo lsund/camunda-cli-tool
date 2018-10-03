@@ -44,15 +44,15 @@
         (swap! variables assoc k {:value v :type "String"})))
     (start-process! key @variables)))
 
-(defn manage [id key]
-  {:title "Manage Process"
+(defn manage [id key name]
+  {:title (str "Manage Process Definition: " name)
    :children {"s" {:description "Start process instance with default variables"
                    :function start-process!
                    :args [key]}
               "v" {:description "Start process instance with given variables"
                    :function read-variables-and-start-process!
                    :args [key]}
-              "l" {:description "List Process Instances"
+              "l" {:description "List Process Instances for this definition"
                    :next pinst/root
                    :args [id]}}})
 
@@ -63,7 +63,7 @@
 
 (defn mergefun [{:keys [id key name] :as pdef}]
   (merge pdef {:description name
-               :next manage :args [id key]}))
+               :next manage :args [id key name]}))
 
 (defn root
   "If no arguments are given, return a node with all process instances.

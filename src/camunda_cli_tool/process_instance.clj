@@ -18,16 +18,17 @@
   (rename-keys  (select-keys (map-keys keyword j) [:id :definitionId])
                 {:definitionId :definition-id}))
 
-(defn add-start-time [pinst]
-  (assoc pinst
-             :start-time
-             (get (j/read-str (:body (http/rest-get (str "history"
-                                                         "/" rest-endpoint
-                                                         "/" (:id pinst))))) "startTime")))
+(defn add-historic-data [pinst]
+  (let [history (j/read-str (:body (http/rest-get (str "history"
+                                                       "/" rest-endpoint
+                                                       "/" (:id pinst)))))]
+    (merge pinst
+           {:start-time (get history "startTime")
+            :definition-name (get history "processDefinitionName")})))
 
 (defn list-all []
   (let [active (map json->ProcessInstance (j/read-str (:body (http/rest-get rest-endpoint))))]
-    (map add-start-time active)))
+    (map add-historic-data active)))
 
 (defn stop-process! [id]
   {:value (:status (http/rest-delete (str rest-endpoint "/" id)))
@@ -40,7 +41,7 @@
    :rebound false})
 
 (defn manage [id]
-  {:title "Manage Process Instance"
+  {:title (str "Manage Process Instance: " id)
    :children {"s" {:description "Stop Process Instance" :function stop-process! :args [id]}
               "v" {:description "Inspect variables" :function inspect-variables :args [id]}}})
 
@@ -49,8 +50,8 @@
    :key "pi"
    :children instances})
 
-(defn mergefun [{:keys [id start-time] :as pinst}]
-  (merge pinst {:description (str id " [" start-time "]")
+(defn mergefun [{:keys [id definition-name start-time] :as pinst}]
+  (merge pinst {:description (str definition-name ": " id " [" start-time "]")
                 :next manage :args [id]}))
 
 (defn root
