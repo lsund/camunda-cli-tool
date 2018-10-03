@@ -61,17 +61,12 @@
    :key "pd"
    :children instances})
 
-(defn associate [pred]
-  "Creates a sorted map of k/v pairs, where the key is a unique integer and the value is a map
-   corresponding to the process instance. pred is a predicate function that is used for filtering
-   elements based on (list-all)"
-  (into (sorted-map) (zipmap (map str (range))
-                             (filter pred (map #(merge % {:description (:name %)
-                                                          :next manage :args [(:id %) (:key %)]})
-                                               (list-most-recent))))))
+(defn mergefun [{:keys [id key name] :as pdef}]
+  (merge pdef {:description name
+               :next manage :args [id key]}))
 
 (defn root
   "If no arguments are given, return a node with all process instances.
    If one argument is given, then filter on process instances matching this definition-id."
   ([]
-   (make-root (associate (constantly true)))))
+   (make-root (util/associate (constantly true) mergefun (list-most-recent)))))
