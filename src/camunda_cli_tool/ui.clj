@@ -7,6 +7,9 @@
 
 (def repl)
 
+(defn print-menu-item [prefix & args]
+  (printf "  %s %s\n" prefix (apply str args)))
+
 (def root
   {:title "Main Menu"
    :children {"pd" {:description "List process definitions" :next pdef/root}
@@ -18,20 +21,22 @@
     (str padding title padding)))
 
 (defn print-node [{:keys [title children]}]
+  (println (apply str (repeat screen-width "-")))
   (println (show-title title))
   (println)
   (if (not-empty children)
     (doseq [[x o] children]
       (cond
         (= :title x) nil
-        (string? x) (printf "(%s) %s\n" x (:description o))
+        (string? x) (printf "  (%s) %s\n" x (:description o))
         :default (throw (Exception. (str "Should not happen. Type: " (type x))))))
-    (println "Nothing to display"))
+    (println " Nothing to display"))
   (println)
-  (println "(b) Back")
-  (println "(m) Main Menu")
-  (println "(q) Quit")
-  (println "(r) Refresh"))
+  (print-menu-item "(b) Back")
+  (print-menu-item "(m) Main Menu")
+  (print-menu-item "(q) Quit")
+  (print-menu-item "(r) Refresh")
+  (print "  \n  ? "))
 
 (defn forward-node [k node nodes]
   "Tries to advance down the action tree.
@@ -48,7 +53,6 @@
   (let [child (get-in node [:children k :next])
         fun (get-in node [:children k :function])
         args (get-in node [:children k :args])]
-    (println)
     (cond
       child (repl (conj nodes (apply child args)))
       fun (let [result (apply fun args)]
@@ -56,7 +60,7 @@
             (if (:rebound result)
               (repl (next nodes))
               (repl nodes)))
-      :default (do (println "Unknown command: " k)
+      :default (do (print-menu-item "Unknown command: " k)
                    (repl nodes)))))
 
 (defn backward-node [k nodes]
@@ -74,12 +78,13 @@
 
 (defn repl [nodes]
   (let [node (first nodes)]
-    (println (apply str (repeat screen-width "-")))
+
     (print-node node)
     (flush)
     (let [k (read-line)]
+      (println k)
       (case k
-        "q" (println "Bye")
+        "q" (println "\n  Bye")
         "b" (backward-node k nodes)
         "m" (repl (list (last nodes)))
         "r" (if-let [key (:key node)]
