@@ -1,13 +1,17 @@
 (ns camunda-cli-tool.http
-  (:require [clj-http.client :as client]))
+  (:require [clj-http.client :as client]
+            [slingshot.slingshot :refer [try+]]))
 
-(def camunda-base-uri "http://localhost:8080/engine-rest")
+(def camunda-base-uri "http://camunda.dev.lambdawerk.com:8080/engine-rest")
 
 (defn rest-url [resource]
   (str camunda-base-uri "/" resource))
 
 (defn rest-get [resource]
-  (client/get (rest-url resource)))
+  (try+
+   (client/get (rest-url resource))
+   (catch java.net.ConnectException _
+     (println "Could not connect to: " camunda-base-uri))))
 
 (defn rest-post [resource variables]
   (client/post (rest-url resource)

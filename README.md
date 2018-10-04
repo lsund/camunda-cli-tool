@@ -4,5 +4,5 @@
 
 ```
 lein uberjar
-java -jar target/camunda-cli-tool-0.1.0-SNAPSHOT-standalone.jar
+java -jar target/camunda-cli-tool-x.x.x-SNAPSHOT-standalone.jar
 ```
