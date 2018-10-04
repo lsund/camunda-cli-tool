@@ -10,8 +10,9 @@
 (def rest-endpoint "process-definition")
 
 (defn list-all []
-  (map (partial util/json->instance-map [:id :key :name :version])
-       (j/read-str (:body (http/rest-get rest-endpoint)))))
+  (if-let [body (:body (http/rest-get rest-endpoint))]
+    (map (partial util/json->instance-map [:id :key :name :version])
+         (j/read-str body))))
 
 (defn list-most-recent []
   (->> (list-all)
