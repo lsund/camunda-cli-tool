@@ -3,5 +3,5 @@
   (:gen-class))
 
 (defn -main [& args]
-  (println "Use the keys in (brackets) to navigate.")
+  (println "\n  Please use the keys displayed in (brackets) to navigate\n")
   (ui/repl (list ui/root)))
