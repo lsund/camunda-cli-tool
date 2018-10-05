@@ -15,9 +15,9 @@
          (j/read-str body))))
 
 (defn list-most-recent []
-  (->> (list-all)
-       (sort-by :version >)
-       (distinct-by (fn [{:keys [key]}] key))))
+  (if-let [body (:body (http/rest-get rest-endpoint {:latestVersion true}))]
+    (map (partial util/json->instance-map [:id :key :name :version])
+         (j/read-str body))))
 
 (defn start-process!
   ([key]
@@ -52,7 +52,7 @@
                    :args [id]}}})
 
 (defn make-root [instances]
-  {:title "Selcet Process Definition"
+  {:title "Select Process Definition"
    :key "pd"
    :children instances})
 

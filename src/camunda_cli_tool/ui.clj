@@ -82,6 +82,7 @@
     (print-node node)
     (flush)
     (let [k (read-line)]
+      (println)
       (case k
         "q" (println "\n  Bye")
         "b" (backward-node k nodes)

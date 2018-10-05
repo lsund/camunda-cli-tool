@@ -7,11 +7,15 @@
 (defn rest-url [resource]
   (str camunda-base-uri "/" resource))
 
-(defn rest-get [resource]
-  (try+
-   (client/get (rest-url resource))
-   (catch java.net.ConnectException _
-     (println "Could not connect to: " camunda-base-uri))))
+(defn rest-get
+  ([resource]
+   (rest-get resource {}))
+  ([resource params]
+   (try+
+    (client/get (rest-url resource) {:query-params params})
+    (catch java.net.ConnectException _
+      (println "Could not connect to: " camunda-base-uri)))))
+
 
 (defn rest-post [resource variables]
   (client/post (rest-url resource)
