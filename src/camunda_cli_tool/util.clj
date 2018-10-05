@@ -19,12 +19,15 @@
 (defn int->char [n]
   (char (+ n 48)))
 
+(defn compare-parsed-int [x y]
+  (compare (parse-int x) (parse-int y)))
+
 (defn associate [pred mergefun xs]
   "Creates a sorted map of k/v pairs, where the key is a unique integer and the value is a map
    corresponding to the instance based on xs. mergefun is a function used for adding extra
   information to each instance. pred is a predicate function, that filters out
   elements, also based on xs"
-  (into (sorted-map) (zipmap (map str (range))
+  (into (sorted-map-by compare-parsed-int) (zipmap (map str (range))
                              (filter pred (map mergefun xs)))))
 
 (defn json->instance-map [keyseq json]
