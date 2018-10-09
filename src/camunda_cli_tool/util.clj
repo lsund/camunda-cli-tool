@@ -5,7 +5,10 @@
    [medley.core :refer [map-keys]]))
 
 (defn parse-int [s]
-  (Integer. (re-find  #"\d+" (str s))))
+  (try
+    (Integer. (re-find  #"\d+" (str s)))
+    (catch NumberFormatException e
+      nil)))
 
 (defn padding-string [base length]
   (apply str (repeat (->> base count (- length)) \.)))
