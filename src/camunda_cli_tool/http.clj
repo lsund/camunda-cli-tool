@@ -23,5 +23,8 @@
                {:form-params {:variables variables}
                 :content-type :json}))
 
-(defn rest-delete [resource]
-  (client/delete (rest-url resource)))
+(defn rest-delete
+  ([resource]
+   (rest-delete resource {}))
+  ([resource params]
+   (client/delete (rest-url resource) {:query-params params})))

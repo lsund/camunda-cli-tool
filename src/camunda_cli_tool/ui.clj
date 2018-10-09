@@ -1,7 +1,8 @@
 (ns camunda-cli-tool.ui
   (:require [camunda-cli-tool.process-definition :as pdef]
             [camunda-cli-tool.process-instance :as pinst]
-            [camunda-cli-tool.external-task :as task]))
+            [camunda-cli-tool.external-task :as task]
+            [clojure.string :as string]))
 
 (def screen-width 120)
 
@@ -39,6 +40,14 @@
   (print-menu-item "(r) Refresh")
   (print "  \n  ? "))
 
+(defn try-find-child-node [k children]
+  "The first child in children for which k matches a substring of its :name."
+  (->> children
+       (filter (fn [[_ child]]
+                 (re-find (re-pattern k) (-> child :name string/lower-case (string/split #"/") last))))
+       first
+       second))
+
 (defn forward-node [k node nodes]
   "Tries to advance down the action tree.
    If the current node contains a child for the given key k, then read its node and continue.
@@ -51,18 +60,23 @@
    application. Then, the correct action is to return to the previous menu that lists all
    current processes.
    "
-  (let [child (get-in node [:children k :next])
+  (let [next (get-in node [:children k :next])
         fun (get-in node [:children k :function])
         args (get-in node [:children k :args])]
     (cond
-      child (repl (conj nodes (apply child args)))
+      next (repl (conj nodes (apply next args)))
       fun (let [result (apply fun args)]
             (println "Result: " (:value result))
             (if (:rebound result)
               (repl (next nodes))
               (repl nodes)))
-      :default (do (print-menu-item "Unknown command: " k)
-                   (repl nodes)))))
+      :default (if-let [child (try-find-child-node k (:children node))]
+                 (let [next (:next child)
+                       args (:args child)]
+                   (repl (conj nodes (apply next args))))
+                 (do
+                   (print-menu-item "Unknown command: " k)
+                   (repl nodes))))))
 
 (defn backward-node [k nodes]
   (if-let [previous (next nodes)]

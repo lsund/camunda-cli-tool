@@ -34,6 +34,12 @@
      {:value (:status resp)
       :rebound false})))
 
+(defn delete-process!
+  [id]
+  (let [resp (http/rest-delete (str rest-endpoint "/" id) {:cascade true})]
+    {:value (:status resp)
+     :rebound true}))
+
 (defn read-variables-and-start-process! [key]
   (let [variables (atom {})]
     (doseq [k (config/required-keys key)]
@@ -52,7 +58,10 @@
                    :function read-variables-and-start-process!
                    :args [key]}
               "pi" {:description "List Process Instances for this definition"
-                   :next pinst/root
+                    :next pinst/root
+                    :args [id]}
+              "d" {:description "Delete this process instance"
+                   :function delete-process!
                    :args [id]}}})
 
 (defn make-root [instances]
