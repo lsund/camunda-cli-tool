@@ -36,7 +36,7 @@
   {:title (str "Manage Process Instance: " id)
    :children {"s" {:description "Stop Process Instance" :function stop-process! :args [id]}
               "v" {:description "Inspect variables" :function inspect-variables :args [id]}
-              "l" {:description "List external tasks for this instance"
+              "et" {:description "List external tasks for this instance"
                    :next task/root
                    :args [id]}}})
 

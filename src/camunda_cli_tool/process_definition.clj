@@ -51,7 +51,7 @@
               "v" {:description "Start process instance with given variables"
                    :function read-variables-and-start-process!
                    :args [key]}
-              "l" {:description "List Process Instances for this definition"
+              "pi" {:description "List Process Instances for this definition"
                    :next pinst/root
                    :args [id]}}})
 

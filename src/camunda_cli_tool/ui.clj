@@ -79,7 +79,6 @@
 
 (defn repl [nodes]
   (let [node (first nodes)]
-
     (print-node node)
     (flush)
     (let [k (read-line)]
