@@ -1,4 +1,4 @@
-(defproject camunda-cli-tool "0.3.0-SNAPSHOT"
+(defproject camunda-cli-tool "0.3.1-SNAPSHOT"
   :description "A tool for quickly interacting with camunda through the command line."
   :url "https://github.com/lsund/camunda-cli-tool"
   :dependencies [[org.clojure/clojure "1.8.0"]
