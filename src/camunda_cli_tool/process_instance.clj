@@ -32,6 +32,7 @@
    :rebound false})
 
 (defn manage [id]
+  "Node for managing a specific process instance."
   {:title (str "Manage Process Instance: " id)
    :children {"s" {:description "Stop Process Instance" :function stop-process! :args [id]}
               "v" {:description "Inspect variables" :function inspect-variables :args [id]}
@@ -49,8 +50,9 @@
                 :next manage :args [id]}))
 
 (defn root
-  "If no arguments are given, return a node with all process instances.
-   If one argument is given, then filter on process instances matching this definition-id."
+  "Node for listing process instances. If no arguments are given, return a node with all process
+  instances.  If one argument is given, then filter on process instances matching this
+  definition-id."
   ([]
    (make-root (util/associate (constantly true)
                               mergefun

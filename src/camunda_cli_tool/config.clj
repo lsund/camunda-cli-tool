@@ -1,7 +1,10 @@
 (ns camunda-cli-tool.config
   (:require [clojure.edn :as edn]))
 
-(defn load-default-variables [key]
+(defn load []
+  (-> "resources/edn/config.edn" slurp edn/read-string))
+
+(defn process-variables [key]
   (if-let [variables (get-in (edn/read-string (slurp "resources/edn/process-variables.edn"))
                              [key :default])]
     variables

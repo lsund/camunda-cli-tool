@@ -12,12 +12,11 @@
        (j/read-str (:body (http/rest-get rest-endpoint)))))
 
 (defn unlock! [id]
-  {:value (:status (http/rest-post (str rest-endpoint
-                                        "/" id
-                                        "/" "unlock")))
+  {:value (:status (http/rest-post (str rest-endpoint "/" id "/" "unlock")))
    :rebound false})
 
 (defn manage [id]
+  "Node for managing a specific external task"
   {:title (str "Manage external task: " id)
    :children {"u" {:description "Unlock task" :function unlock! :args [id]}}})
 
@@ -32,6 +31,7 @@
                :args [id]}))
 
 (defn root
+  "Node for listing external tasks"
   ([]
    (make-root (util/associate (constantly true) mergefun (list-all))))
   ([pinst-id]

@@ -11,6 +11,7 @@
   (printf "  %s %s\n" prefix (apply str args)))
 
 (def root
+  "Root node."
   {:title "Main Menu"
    :children {"pd" {:description "List process definitions" :next pdef/root}
               "pi" {:description "List active process instances" :next pinst/root}

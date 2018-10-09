@@ -21,7 +21,10 @@
 
 (defn start-process!
   ([key]
-   (start-process! key (config/load-default-variables key)))
+   (try
+     (start-process! key (config/process-variables key))
+     (catch Exception e
+       (println "Could not start process:" (.getMessage e)))))
   ([key variables]
    (let [resp (http/rest-post (str rest-endpoint
                                    "/" "key"
@@ -40,6 +43,7 @@
     (start-process! key @variables)))
 
 (defn manage [id key name]
+  "Node for managing a specific process definition."
   {:title (str "Manage Process Definition: " name)
    :children {"s" {:description "Start process instance with default variables"
                    :function start-process!
@@ -61,4 +65,5 @@
                :next manage :args [id key name]}))
 
 (defn root []
+  "Node for listing process definitions."
   (make-root (util/associate (constantly true) mergefun (list-most-recent))))
