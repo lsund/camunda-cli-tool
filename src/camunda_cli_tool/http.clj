@@ -1,8 +1,9 @@
 (ns camunda-cli-tool.http
   (:require [clj-http.client :as client]
+            [camunda-cli-tool.config :as config]
             [slingshot.slingshot :refer [try+]]))
 
-(def camunda-base-uri "http://camunda.dev.lambdawerk.com:8080/engine-rest")
+(def camunda-base-uri (:camunda-base-uri (config/load)))
 
 (defn rest-url [resource]
   (str camunda-base-uri "/" resource))
