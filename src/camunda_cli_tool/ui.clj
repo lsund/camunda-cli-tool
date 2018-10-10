@@ -2,6 +2,7 @@
   (:require [camunda-cli-tool.process-definition :as pdef]
             [camunda-cli-tool.process-instance :as pinst]
             [camunda-cli-tool.external-task :as task]
+            [camunda-cli-tool.decision-definition :as ddef]
             [clojure.string :as string]))
 
 (def screen-width 120)
@@ -16,7 +17,8 @@
   {:title "Main Menu"
    :children {"pd" {:description "List process definitions" :next pdef/root}
               "pi" {:description "List active process instances" :next pinst/root}
-              "et" {:description "List available external tasks" :next task/root}}})
+              "et" {:description "List available external tasks" :next task/root}
+              "dd" {:description "List Decision Definitions" :next ddef/root}}})
 
 (defn show-title [title]
   (let [padding (apply str (take (quot (- screen-width (count title)) 2) (repeat \.)))]

@@ -3,7 +3,7 @@
   :required [:fruit]}
 
  "process.heron.encounter-import.import-encounters"
- {:default {:key {:value "2018/xml/ludvig-test/eob-11785-plans-43-44.xml"
+ {:default {:key {:value "2018/xml/ludvig-test/eob-11811-plans-43-44.xml"
                   :type "String"}
             :bucket {:value "edi-healthcare--dev--heron--encounter-submission"
                      :type "String"}}
