@@ -60,20 +60,20 @@
    application. Then, the correct action is to return to the previous menu that lists all
    current processes.
    "
-  (let [next (get-in node [:children k :next])
+  (let [next-node (get-in node [:children k :next])
         fun (get-in node [:children k :function])
         args (get-in node [:children k :args])]
     (cond
-      next (repl (conj nodes (apply next args)))
+      next-node (repl (conj nodes (apply next-node args)))
       fun (let [result (apply fun args)]
             (println "Result: " (:value result))
             (if (:rebound result)
               (repl (next nodes))
               (repl nodes)))
       :default (if-let [child (try-find-child-node k (:children node))]
-                 (let [next (:next child)
+                 (let [next-node (:next child)
                        args (:args child)]
-                   (repl (conj nodes (apply next args))))
+                   (repl (conj nodes (apply next-node args))))
                  (do
                    (print-menu-item "Unknown command: " k)
                    (repl nodes))))))

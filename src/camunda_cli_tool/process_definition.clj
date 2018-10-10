@@ -34,9 +34,15 @@
      {:value (:status resp)
       :rebound false})))
 
-(defn delete-process!
-  [id]
+(defmulti delete-process! first)
+
+(defmethod delete-process! :single [_ id]
   (let [resp (http/rest-delete (str rest-endpoint "/" id) {:cascade true})]
+    {:value (:status resp)
+     :rebound true}))
+
+(defmethod delete-process! :all [_ key]
+  (let [resp (http/rest-delete (str rest-endpoint "/" "key" "/" key "/" "delete"))]
     {:value (:status resp)
      :rebound true}))
 
@@ -60,17 +66,20 @@
               "pi" {:description "List Process Instances for this definition"
                     :next pinst/root
                     :args [id]}
-              "d" {:description "Delete this process instance"
+              "d" {:description "Delete this process definition"
                    :function delete-process!
-                   :args [id]}}})
+                   :args [:single id]}
+              "da" {:description "Delete all process definition with this key"
+                   :function delete-process!
+                   :args [:all key]}}})
 
 (defn make-root [instances]
   {:title "Select Process Definition"
    :key "pd"
    :children instances})
 
-(defn mergefun [{:keys [id key name] :as pdef}]
-  (merge pdef {:description name
+(defn mergefun [{:keys [id key name version] :as pdef}]
+  (merge pdef {:description (str name " [version: " version "]")
                :next manage :args [id key name]}))
 
 (defn root []
