@@ -3,6 +3,5 @@
 ## Usage
 
 ```
-lein uberjar
-java -jar target/camunda-cli-tool-x.x.x-SNAPSHOT-standalone.jar
+lein uberjar && ./scripts/run.sh
 ```
