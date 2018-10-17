@@ -3,14 +3,14 @@
   :required [:fruit]}
 
  "process.heron.encounter-import.import-encounters"
- {:default {:key {:value "2018/xml/ludvig-test/eob-11811-plans-43-44.xml"
+ {:default {:key {:value "2018/xml/ludvig-test/cleanup-71_31.xml"
                   :type "String"}
             :bucket {:value "edi-healthcare--dev--heron--encounter-submission"
                      :type "String"}}
   :required [:key :bucket]}
 
  "process.heron.batch-submission.submit-batch.submit-batch"
- {:default {:plan {:value "tx-medicaid"
+ {:default {:plan {:value "ar-medicaid"
                    :type "String"}}
   :required [:plan]}
 
@@ -19,15 +19,15 @@
   :required []}
 
  "process.heron.responses.load-response-file.load-response-file"
- {:default {:vendor {:value "ia-medicaid"
-                    :type "String"}
-           :fileType {:value "enc-response-d"
-                      :type "String"}
-           :key {:value "2018/iowa-error-file/ENC_RESPONSE_D_20180705_082604.TXT"
-                 :type "String"}
-           :bucket {:value "edi-healthcare--dev--heron--encounter-submission"
-                    :type "String"}
-           :fileFormat {:value "fixed-width"
-                        :type "String"}}
+ {:default {:vendor {:value "ar-medicaid"
+                     :type "String"}
+            :fileType {:value "dmc-encounter-supplemental"
+                       :type "String"}
+            :key {:value "2018/dmc-encounter-supplemental/MCNA_P_09AUG2018.zip"
+                  :type "String"}
+            :bucket {:value "edi-healthcare--dev--heron--encounter-submission"
+                     :type "String"}
+            :fileFormat {:value "delimiter-separated-values"
+                         :type "String"}}
   :required [:vendor :fileType :key :bucket :fileFormat]}}
 
