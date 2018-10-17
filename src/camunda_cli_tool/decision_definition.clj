@@ -20,7 +20,7 @@
   "Node for managing a specific process definition."
   {:title (str "Manage Decision Definition: " name)
    :children {"d" {:description "Delete this decision definition"
-                   :function delete-decision!
+                   :function :todo
                    :args [id]}}})
 
 (defn make-root [instances]
