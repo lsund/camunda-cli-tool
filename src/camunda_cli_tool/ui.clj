@@ -46,7 +46,7 @@
   "The first child in children for which k matches a substring of its :name."
   (some->> children
            (filter (fn [[_ child]]
-                     (when-let [last-part (some-> child :name string/lower-case (string/split #"/") last)]
+                     (when-let [last-part (some-> child :description string/lower-case (string/split #"/") last)]
                        (re-find (re-pattern k) last-part))))
            first
            second))
@@ -73,10 +73,8 @@
             (if (:rebound result)
               (repl (next nodes))
               (repl nodes)))
-      :default (if-let [child (try-find-child-node k (:children node))]
-                 (let [next-node (:next child)
-                       args (:args child)]
-                   (repl (conj nodes (apply next-node args))))
+      :default (if-let [{:keys [next args] :as child} (try-find-child-node k (:children node))]
+                 (repl (conj nodes (apply next args)))
                  (do
                    (print-menu-item "Unknown command: " k)
                    (repl nodes))))))

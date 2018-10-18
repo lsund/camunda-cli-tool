@@ -31,9 +31,9 @@
                                      "/" "variables")))
    :rebound false})
 
-(defn manage [id]
+(defn manage [id desc]
   "Node for managing a specific process instance."
-  {:title (str "Manage Process Instance: " id)
+  {:title (str "Manage Process Instance: " desc)
    :children {"s" {:description "Stop Process Instance" :function stop-process! :args [id]}
               "v" {:description "Inspect variables" :function inspect-variables :args [id]}
               "et" {:description "List external tasks for this instance "
@@ -46,8 +46,9 @@
    :children instances})
 
 (defn mergefun [{:keys [id definition-name start-time] :as pinst}]
-  (merge pinst {:description (str definition-name ": " id " [" start-time "]")
-                :next manage :args [id]}))
+  (let [desc (str id " [" start-time "] " definition-name )]
+    (merge pinst {:description desc
+                  :next manage :args [id desc]})))
 
 (defn root
   "Node for listing process instances. If no arguments are given, return a node with all process
