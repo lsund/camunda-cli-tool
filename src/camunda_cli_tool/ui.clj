@@ -44,11 +44,12 @@
 
 (defn try-find-child-node [k children]
   "The first child in children for which k matches a substring of its :name."
-  (->> children
-       (filter (fn [[_ child]]
-                 (re-find (re-pattern k) (-> child :name string/lower-case (string/split #"/") last))))
-       first
-       second))
+  (some->> children
+           (filter (fn [[_ child]]
+                     (when-let [last-part (some-> child :name string/lower-case (string/split #"/") last)]
+                       (re-find (re-pattern k) last-part))))
+           first
+           second))
 
 (defn forward-node [k node nodes]
   "Tries to advance down the action tree.

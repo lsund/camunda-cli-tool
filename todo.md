@@ -3,5 +3,5 @@
 [ ] Introduce command line for directly invoking more complicating commands
     like batch delete
 [ ] use a composition of commands
-[ ] Make it recognize keys without enter
+[ ] Make it recognize keys without hitting enter
 [ ] Rename next to something else like child
