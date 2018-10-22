@@ -3,6 +3,7 @@
   (:gen-class))
 
 (defn -main [& args]
+  (println args)
   (cond
     (= (first args) "repl") (do
                               (println "\n  Please use the keys displayed in (brackets) to navigate\n")

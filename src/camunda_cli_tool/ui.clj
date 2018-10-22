@@ -51,21 +51,27 @@
            first
            second))
 
-;; TODO merge with forward-node
-(defn find-node [node ks]
-  (let [k (first ks)
-        next-node (get-in node [:children k :next])
-        fun (get-in node [:children k :function])
-        args (get-in node [:children k :args])]
+(defn find-node [node [x & xs]]
+  (let [next-node (get-in node [:children x :next])
+        fun (get-in node [:children x :function])
+        args (get-in node [:children x :args])]
     (cond
-      (nil? (next ks)) (print-node (apply next-node args))
-      next-node (find-node (apply next-node args) (next ks))
+      next-node (do
+                  (print-node (apply next-node args))
+                  (if xs
+                    (find-node (apply next-node args) xs)
+                    (apply next-node args)))
       fun (let [result (apply fun args)]
-            (println "Result: " (:value result)))
-      :default (if-let [{:keys [next args] :as child} (try-find-child-node k (:children node))]
-                 (print-node (apply next args))
+            (println "Result: " (:value result))
+            result)
+      :default (if-let [{:keys [next args] :as child} (try-find-child-node x (:children node))]
                  (do
-                   (print-menu-item "Unknown command: " k))))))
+                   (print-node (apply next args))
+                   (if xs
+                     (find-node (apply next args) xs)
+                     (apply next args)))
+                 (do
+                   (print-menu-item "Unknown command: " x))))))
 
 (defn forward-node [k node nodes]
   "Tries to advance down the action tree.
@@ -79,21 +85,11 @@
    application. Then, the correct action is to return to the previous menu that lists all
    current processes.
    "
-  (let [next-node (get-in node [:children k :next])
-        fun (get-in node [:children k :function])
-        args (get-in node [:children k :args])]
+  (let [result (find-node node [k])]
     (cond
-      next-node (repl (conj nodes (apply next-node args)))
-      fun (let [result (apply fun args)]
-            (println "Result: " (:value result))
-            (if (:rebound result)
-              (repl (next nodes))
-              (repl nodes)))
-      :default (if-let [{:keys [next args] :as child} (try-find-child-node k (:children node))]
-                 (repl (conj nodes (apply next args)))
-                 (do
-                   (print-menu-item "Unknown command: " k)
-                   (repl nodes))))))
+      (:rebound result) (repl (next nodes))
+      (:value result) (repl nodes)
+      :default (repl (conj nodes result)))))
 
 (defn backward-node [k nodes]
   (if-let [previous (next nodes)]
@@ -122,3 +118,20 @@
               (loop-node key (next nodes))
               (repl nodes))
         (forward-node k node nodes)))))
+
+;; (defn old-forward-node
+;;   (let [next-node (get-in node [:children k :next])
+;;           fun (get-in node [:children k :function])
+;;           args (get-in node [:children k :args])]
+;;       (cond
+;;         next-node (repl (conj nodes (apply next-node args)))
+;;         fun (let [result (apply fun args)]
+;;               (println "Result: " (:value result))
+;;               (if (:rebound result)
+;;                 (repl (next nodes))
+;;                 (repl nodes)))
+;;         :default (if-let [{:keys [next args] :as child} (try-find-child-node k (:children node))]
+;;                    (repl (conj nodes (apply next args)))
+;;                    (do
+;;                      (print-menu-item "Unknown command: " k)
+;;                      (repl nodes))))))
