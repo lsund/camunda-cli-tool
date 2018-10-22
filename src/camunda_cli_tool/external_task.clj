@@ -12,7 +12,7 @@
        (j/read-str (:body (http/rest-get rest-endpoint)))))
 
 (defn unlock! [id]
-  {:value (:status (http/rest-post (str rest-endpoint "/" id "/" "unlock")))
+  {:value (:status (http/rest-post (str rest-endpoint "/" id "/" "unlock") {}))
    :rebound false})
 
 (defn manage [id]

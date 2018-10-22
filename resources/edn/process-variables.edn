@@ -42,5 +42,12 @@
                      :type "String"}
             :fileFormat {:value "delimiter-separated-values"
                          :type "String"}}
-  :required [:vendor :fileType :key :bucket :fileFormat]}}
+  :required [:vendor :fileType :key :bucket :fileFormat]}
+
+ "process.heron.extract-pcids.extract-pcids"
+ {:default {:icns {:value "30000000100001"
+                     :type "String"}
+            :pcids {:value "NEENC04"
+                       :type "String"}}
+  :required [:icns :pcids]}}
 
