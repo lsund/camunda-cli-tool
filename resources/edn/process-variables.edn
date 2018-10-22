@@ -29,5 +29,18 @@
                      :type "String"}
             :fileFormat {:value "delimiter-separated-values"
                          :type "String"}}
+  :required [:vendor :fileType :key :bucket :fileFormat]}
+
+ "process.heron.responses.merge-and-load-arkansas-response-files.merge-and-load-arkansas-response-files"
+ {:default {:vendor {:value "ar-medicaid"
+                     :type "String"}
+            :fileType {:value "dmc-encounter-supplemental"
+                       :type "String"}
+            :key {:value "2018/dmc-encounter-supplemental/MCNA_P_12JUL2018.txt"
+                  :type "String"}
+            :bucket {:value "edi-healthcare--dev--heron--encounter-submission"
+                     :type "String"}
+            :fileFormat {:value "delimiter-separated-values"
+                         :type "String"}}
   :required [:vendor :fileType :key :bucket :fileFormat]}}
 

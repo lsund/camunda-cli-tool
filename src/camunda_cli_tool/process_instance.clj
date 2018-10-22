@@ -1,6 +1,8 @@
 (ns camunda-cli-tool.process-instance
   (:require [clojure.data.json :as j]
             [clojure.set :refer [rename-keys]]
+            [clojure.pprint :as pprint]
+            [cheshire.core :as cheshire]
             [camunda-cli-tool.http :as http]
             [camunda-cli-tool.util :as util]
             [camunda-cli-tool.external-task :as task]
@@ -26,10 +28,11 @@
    :rebound true})
 
 (defn inspect-variables [id]
-  {:value (:body (http/rest-get (str rest-endpoint
-                                     "/" id
-                                     "/" "variables")))
-   :rebound false})
+  (let [json (:body (http/rest-get (str rest-endpoint
+                                        "/" id
+                                        "/" "variables")))]
+    {:value (str "\n" (pprint/write (cheshire/parse-string json true) :stream nil))
+     :rebound false}))
 
 (defn manage [id desc]
   "Node for managing a specific process instance."
@@ -37,8 +40,8 @@
    :children {"s" {:description "Stop Process Instance" :function stop-process! :args [id]}
               "v" {:description "Inspect variables" :function inspect-variables :args [id]}
               "et" {:description "List external tasks for this instance "
-                   :next task/root
-                   :args [id]}}})
+                    :next task/root
+                    :args [id]}}})
 
 (defn make-root [instances]
   {:title "Inspect Process"
