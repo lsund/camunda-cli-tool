@@ -1,5 +1,5 @@
 [x] optimize, especially process definition listing
-[ ] Better error messaging: Error code, error title, error description, how to
+[x] Better error messaging: Error code, error title, error description, how to
     fix the error, url for more information.
 [ ] Have a seperate option to run it directly from the command line without
     menus. help flags : --help, help, -h, also after subcommands for help for

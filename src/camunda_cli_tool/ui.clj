@@ -51,6 +51,22 @@
            first
            second))
 
+;; TODO merge with forward-node
+(defn find-node [node ks]
+  (let [k (first ks)
+        next-node (get-in node [:children k :next])
+        fun (get-in node [:children k :function])
+        args (get-in node [:children k :args])]
+    (cond
+      (nil? (next ks)) (print-node (apply next-node args))
+      next-node (find-node (apply next-node args) (next ks))
+      fun (let [result (apply fun args)]
+            (println "Result: " (:value result)))
+      :default (if-let [{:keys [next args] :as child} (try-find-child-node k (:children node))]
+                 (print-node (apply next args))
+                 (do
+                   (print-menu-item "Unknown command: " k))))))
+
 (defn forward-node [k node nodes]
   "Tries to advance down the action tree.
    If the current node contains a child for the given key k, then read its node and continue.
