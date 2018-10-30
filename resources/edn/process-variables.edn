@@ -38,6 +38,7 @@
   :required [:icns :pcids]}
 
  "process.heron.output.create-output-for-arkansas.create-output-for-arkansas"
- {:default {:batch {:test 123}
+ {:default {:batch {:batch-key "AR-MEDICAID-20181025-125547-000000051"
+                    :batch-xml-file "/home/lsund/Temp/AR-MEDICAID-20181025-125547-000000051-external.xml"}
             :productionMode false}
   :required [:batch :productionMode]}}

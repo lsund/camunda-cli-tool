@@ -21,8 +21,7 @@
 (defn rest-post [resource variables]
   (client/post (rest-url resource)
                {:form-params {:variables (camunda-api/clj->engine variables)}
-                :content-type :json
-                :debug true}))
+                :content-type :json}))
 
 (defn rest-delete
   ([resource]
