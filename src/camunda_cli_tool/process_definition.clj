@@ -21,18 +21,18 @@
 
 (defn start-process!
   ([key]
-   (try
-     (start-process! key (config/process-variables key))
-     (catch Exception e
-       (println "Could not start process:" (.getMessage e)))))
+   (start-process! key (config/process-variables key)))
   ([key variables]
-   (let [resp (http/rest-post (str rest-endpoint
-                                   "/" "key"
-                                   "/" key
-                                   "/" "start")
-                              variables)]
-     {:value (:status resp)
-      :rebound false})))
+   (try
+     (let [resp (http/rest-post (str rest-endpoint
+                                     "/" "key"
+                                     "/" key
+                                     "/" "start")
+                                variables)]
+       {:value (:status resp)
+        :rebound false})
+     (catch Exception e
+       (println "Could not start process:" (.getMessage e))))))
 
 (defmulti delete-process! first)
 

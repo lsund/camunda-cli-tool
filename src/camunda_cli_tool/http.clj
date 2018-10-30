@@ -1,7 +1,8 @@
 (ns camunda-cli-tool.http
   (:require [clj-http.client :as client]
             [camunda-cli-tool.config :as config]
-            [slingshot.slingshot :refer [try+]]))
+            [slingshot.slingshot :refer [try+]]
+            [camunda-api.convert-variables :as camunda-api]))
 
 (def camunda-base-uri (:camunda-base-uri (config/load)))
 
@@ -17,11 +18,11 @@
     (catch java.net.ConnectException _
       (println "Could not connect to: " camunda-base-uri)))))
 
-
 (defn rest-post [resource variables]
   (client/post (rest-url resource)
-               {:form-params {:variables variables}
-                :content-type :json}))
+               {:form-params {:variables (camunda-api/clj->engine variables)}
+                :content-type :json
+                :debug true}))
 
 (defn rest-delete
   ([resource]

@@ -1,17 +1,14 @@
 {"process.lsund.buy_fruit.buy-fruit"
- {:default {:fruit {:value "banana" :type "String"}}
+ {:default {:fruit "banana"}
   :required [:fruit]}
 
  "process.heron.encounter-import.import-encounters"
- {:default {:key {:value "2018/xml/ludvig-test/cleanup-71_31.xml"
-                  :type "String"}
-            :bucket {:value "edi-healthcare--dev--heron--encounter-submission"
-                     :type "String"}}
+ {:default {:key "2018/xml/ludvig-test/cleanup-71_34.xml"
+            :bucket "edi-healthcare--dev--heron--encounter-submission"}
   :required [:key :bucket]}
 
  "process.heron.batch-submission.submit-batch.submit-batch"
- {:default {:plan {:value "ar-medicaid"
-                   :type "String"}}
+ {:default {:plan "ar-medicaid"}
   :required [:plan]}
 
  "process.lsund.failer.failer"
@@ -19,35 +16,28 @@
   :required []}
 
  "process.heron.responses.load-response-file.load-response-file"
- {:default {:vendor {:value "ar-medicaid"
-                     :type "String"}
-            :fileType {:value "dmc-encounter-supplemental"
-                       :type "String"}
-            :key {:value "2018/dmc-encounter-supplemental/MCNA_P_09AUG2018.zip"
-                  :type "String"}
-            :bucket {:value "edi-healthcare--dev--heron--encounter-submission"
-                     :type "String"}
-            :fileFormat {:value "delimiter-separated-values"
-                         :type "String"}}
+ {:default {:vendor "ar-medicaid"
+            :fileType "dmc-encounter-supplemental"
+            :key "2018/dmc-encounter-supplemental/MCNA_P_09AUG2018.zip"
+            :bucket "edi-healthcare--dev--heron--encounter-submission"
+            :fileFormat "delimiter-separated-values"}
   :required [:vendor :fileType :key :bucket :fileFormat]}
 
  "process.heron.responses.merge-and-load-arkansas-response-files.merge-and-load-arkansas-response-files"
- {:default {:vendor {:value "ar-medicaid"
-                     :type "String"}
-            :fileType {:value "dmc-encounter-supplemental"
-                       :type "String"}
-            :key {:value "2018/dmc-encounter-supplemental/MCNA_P_12JUL2018.txt"
-                  :type "String"}
-            :bucket {:value "edi-healthcare--dev--heron--encounter-submission"
-                     :type "String"}
-            :fileFormat {:value "delimiter-separated-values"
-                         :type "String"}}
+ {:default {:vendor "ar-medicaid"
+            :fileType "dmc-encounter-supplemental"
+            :key "2018/dmc-encounter-supplemental/MCNA_P_12JUL2018.txt"
+            :bucket "edi-healthcare--dev--heron--encounter-submission"
+            :fileFormat "delimiter-separated-values"}
   :required [:vendor :fileType :key :bucket :fileFormat]}
 
- "process.heron.extract-pcids.extract-pcids"
- {:default {:icns {:value "30000000100001"
-                     :type "String"}
-            :pcids {:value "NEENC04"
-                       :type "String"}}
-  :required [:icns :pcids]}}
+ "process.heron.export-transmission-groups.export-transmission-groups.export-transmission-groups"
+ {:default {:icns "30000000100001"
+            :pcids "NEENC04"
+            :rawXML false}
+  :required [:icns :pcids]}
 
+ "process.heron.output.create-output-for-arkansas.create-output-for-arkansas"
+ {:default {:batch {:test 123}
+            :productionMode false}
+  :required [:batch :productionMode]}}

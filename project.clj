@@ -3,6 +3,7 @@
   :url "https://github.com/lsund/camunda-cli-tool"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.json "0.2.6"]
+                 [lambdawerk/camunda-api "5.0.0"]
                  [medley "1.0.0"]
                  [clj-http "3.9.1"]
                  [cheshire "5.8.1"]
