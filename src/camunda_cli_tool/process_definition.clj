@@ -63,6 +63,9 @@
               "v" {:description "Start process instance with given variables"
                    :function read-variables-and-start-process!
                    :args [key]}
+              "cut" {:description "Start process instance remaining arguments"
+                     :function start-process!
+                     :args [key]}
               "pi" {:description "List Process Instances for this definition"
                     :next pinst/root
                     :args [id]}
@@ -70,8 +73,8 @@
                    :function delete-process!
                    :args [:single id]}
               "da" {:description "Delete all process definition with this key"
-                   :function delete-process!
-                   :args [:all key]}}})
+                    :function delete-process!
+                    :args [:all key]}}})
 
 (defn make-root [instances]
   {:title "Select Process Definition"

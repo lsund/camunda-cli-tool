@@ -3,12 +3,12 @@
   :required [:fruit]}
 
  "process.heron.encounter-import.import-encounters"
- {:default {:key "2018/xml/ludvig-test/cleanup-71_34.xml"
+ {:default {:key "2018/xml/ludvig-test/plan-64-ap-spread-Dec-2017_2.xml"
             :bucket "edi-healthcare--dev--heron--encounter-submission"}
   :required [:key :bucket]}
 
  "process.heron.batch-submission.submit-batch.submit-batch"
- {:default {:plan "ar-medicaid"}
+ {:default {:plan "fl-medicaid-100145309"}
   :required [:plan]}
 
  "process.lsund.failer.failer"
@@ -18,7 +18,7 @@
  "process.heron.responses.load-response-file.load-response-file"
  {:default {:vendor "ar-medicaid"
             :fileType "dmc-encounter-supplemental"
-            :key "2018/dmc-encounter-supplemental/MCNA_P_09AUG2018.zip"
+            :key "2018/dmc-encounter-supplemental/EMPTY_PD_04OCT2018.txt"
             :bucket "edi-healthcare--dev--heron--encounter-submission"
             :fileFormat "delimiter-separated-values"}
   :required [:vendor :fileType :key :bucket :fileFormat]}
@@ -26,7 +26,7 @@
  "process.heron.responses.merge-and-load-arkansas-response-files.merge-and-load-arkansas-response-files"
  {:default {:vendor "ar-medicaid"
             :fileType "dmc-encounter-supplemental"
-            :key "2018/dmc-encounter-supplemental/MCNA_P_12JUL2018.txt"
+            :key "2018/dmc-encounter-supplemental/EMPTY_P_04OCT2018.zip"
             :bucket "edi-healthcare--dev--heron--encounter-submission"
             :fileFormat "delimiter-separated-values"}
   :required [:vendor :fileType :key :bucket :fileFormat]}
@@ -37,8 +37,9 @@
             :rawXML false}
   :required [:icns :pcids]}
 
- "process.heron.output.create-output-for-arkansas.create-output-for-arkansas"
+ "process.heron.output.create837d-output.create-837d-output"
  {:default {:batch {:batch-key "AR-MEDICAID-20181025-125547-000000051"
-                    :batch-xml-file "/home/lsund/Temp/AR-MEDICAID-20181025-125547-000000051-external.xml"}
+                    :batch-xml-file "/tmp/AR-MEDICAID-20181025-125547-000000051-external.xml"}
+            :plan "ne-medicaid"
             :productionMode false}
   :required [:batch :productionMode]}}

@@ -51,11 +51,18 @@
            first
            second))
 
+(defn- cli-args->map [xs]
+  (->> xs
+      (map #(string/split % #":"))
+      (map (fn [[x y]] [(keyword x) y]))
+      (into {})))
+
 (defn find-node [node [x & xs]]
   (let [next-node (get-in node [:children x :next])
         fun (get-in node [:children x :function])
         args (get-in node [:children x :args])]
     (cond
+      (= x "cut") (fun (first args) (cli-args->map xs))
       next-node (do
                   (print-node (apply next-node args))
                   (if xs

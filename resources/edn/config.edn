@@ -1,1 +1,1 @@
-{:camunda-base-uri "http://camunda.dev.lambdawerk.com:8080/engine-rest"}
+{:camunda-base-uri "http://localhost:8080/engine-rest"}
