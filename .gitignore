@@ -9,3 +9,5 @@ pom.xml.asc
 /.nrepl-port
 .hgignore
 .hg/
+resources/edn/process-variables.edn
+resources/edn/config.edn
