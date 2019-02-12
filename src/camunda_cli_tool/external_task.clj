@@ -36,6 +36,6 @@
   ([pinst-id]
    (assoc external-task-list-handler
           :children
-          (util/associate #(= (:process-instance-id %) pinst-id)
-                          with-description-and-handler-fn
-                          (list-all)))))
+          (util/build-indexed-map #(= (:process-instance-id %) pinst-id)
+                                  with-description-and-handler-fn
+                                  (list-all)))))
