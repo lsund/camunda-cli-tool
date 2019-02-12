@@ -16,22 +16,19 @@
     (map (partial util/json->instance-map [:id :key :name :version])
          (j/read-str body))))
 
-(defn element [id key name]
+(defn handler [id key name]
   "Node for managing a specific process definition."
   {:title (str "Manage Decision Definition: " name)
    :children {"d" {:description "Delete this decision definition"
                    :function :todo
                    :args [id]}}})
 
-(defn make-list [instances]
+(defn with-description-and-handler-fn [{:keys [id key name version] :as ddef}]
+  (merge ddef {:description (str name " [version: " version "]")
+               :handler-fn handler :handler-args [id key name]}))
+
+(defn list-all []
+  "Node for listing process definitions."
   {:title "Select Decision Definition"
    :key "dd"
-   :children instances})
-
-(defn mergefun [{:keys [id key name version] :as ddef}]
-  (merge ddef {:description (str name " [version: " version "]")
-               :manage-fn element :manage-args [id key name]}))
-
-(defn list []
-  "Node for listing process definitions."
-  (make-root (util/associate (constantly true) mergefun (list-most-recent))))
+   :children (util/build-indexed-map with-description-and-handler-fn (list-most-recent))})

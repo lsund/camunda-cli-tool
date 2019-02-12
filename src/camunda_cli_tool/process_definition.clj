@@ -9,12 +9,12 @@
 
 (def rest-endpoint "process-definition")
 
-(defn list-all []
+(defn list-all-process-definitions []
   (if-let [body (:body (http/rest-get rest-endpoint))]
     (map (partial util/json->instance-map [:id :key :name :version])
          (j/read-str body))))
 
-(defn list-most-recent []
+(defn list-most-recent-process-definitions []
   (if-let [body (:body (http/rest-get rest-endpoint {:latestVersion true}))]
     (map (partial util/json->instance-map [:id :key :name :version])
          (j/read-str body))))
@@ -54,7 +54,7 @@
         (swap! variables assoc k {:value v :type "String"})))
     (start-process! key @variables)))
 
-(defn element [id key name]
+(defn handler [id key name]
   "Node for managing a specific process definition."
   {:title (str "Manage Process Definition: " name)
    :children {"s" {:description "Start process instance with default variables"
@@ -64,7 +64,7 @@
                    :function start-process!
                    :args [key]}
               "pi" {:description "List Process Instances for this definition"
-                    :next pinst/root
+                    :next pinst/list-all
                     :args [id]}
               "d" {:description "Delete this process definition"
                    :function delete-process!
@@ -73,15 +73,12 @@
                     :function delete-process!
                     :args [:all key]}}})
 
-(defn make-list [instances]
+(defn with-description-and-handler-fn [{:keys [id key name version] :as pdef}]
+  (merge pdef {:description (str name " [version: " version "]")
+               :handler-fn handler :handler-args [id key name]}))
+
+(defn list-all []
+  "Node for listing process definitions."
   {:title "Select Process Definition"
    :key "pd"
-   :children instances})
-
-(defn mergefun [{:keys [id key name version] :as pdef}]
-  (merge pdef {:description (str name " [version: " version "]")
-               :manage-fn element :manage-args [id key name]}))
-
-(defn list []
-  "Node for listing process definitions."
-  (make-list (util/associate (constantly true) mergefun (list-most-recent))))
+   :children (util/build-indexed-map with-description-and-handler-fn (list-most-recent-process-definitions))})

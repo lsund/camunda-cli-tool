@@ -18,7 +18,7 @@
            {:start-time (get history "startTime")
             :definition-name (get history "processDefinitionName")})))
 
-(defn list-all []
+(defn list-all-active-instances []
   (let [active (map (partial util/json->instance-map [:id :definitionId])
                     (j/read-str (:body (http/rest-get rest-endpoint))))]
     (map add-historic-data active)))
@@ -40,28 +40,26 @@
    :children {"s" {:description "Stop Process Instance" :function stop-process! :args [id]}
               "v" {:description "Inspect variables" :function inspect-variables :args [id]}
               "et" {:description "List external tasks for this instance "
-                    :next task/root
+                    :next task/list-all
                     :args [id]}}})
 
-(defn make-list [instances]
+(def process-list-handler
   {:title "Inspect Process"
-   :key "pi"
-   :children instances})
+   :key "pi"})
 
-(defn mergefun [{:keys [id definition-name start-time] :as pinst}]
+(defn with-description-and-handler-fn [{:keys [id definition-name start-time] :as pinst}]
   (let [desc (str id " [" start-time "] " definition-name )]
     (merge pinst {:description desc
                   :manage-fn element :manage-args [id desc]})))
 
-(defn list
+(defn list-all
   "Node for listing process instances. If no arguments are given, return a node with all process
   instances. If one argument is given, then filter on process instances matching this
   definition-id."
   ([]
-   (make-root (util/associate (constantly true)
-                              mergefun
-                              (list-all))))
+   (assoc process-list-handler :children (util/build-indexed-map with-description-and-handler-fn
+                                                                 (list-all-active-instances))))
   ([definition-id]
-   (make-root (util/associate #(= (:definition-id %) definition-id)
-                              mergefun
-                              (list-all)))))
+   (assoc process-list-handler :children (util/build-indexed-map #(= (:definition-id %) definition-id)
+                                                                 with-description-and-handler-fn
+                                                                 (list-all-active-instances)))))

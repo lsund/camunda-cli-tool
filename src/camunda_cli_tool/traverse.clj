@@ -32,8 +32,8 @@
       leaf-fn (let [result (apply leaf-fn next-node-args)]
                 (println "Result: " (:value result))
                 result)
-      :default (if-let [{:keys [manage-fn manage-args]} (try-find-child-node arg (:children node))]
-                 (let [new-root (apply manage-fn manage-args)]
+      :default (if-let [{:keys [handler-fn handler-args]} (try-find-child-node arg (:children node))]
+                 (let [new-root (apply handler-fn handler-args)]
                    (display/print-node new-root)
                    (if args
                      (find-node new-root args)

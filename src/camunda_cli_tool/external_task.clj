@@ -20,21 +20,22 @@
   {:title (str "Manage external task: " id)
    :children {"u" {:description "Unlock task" :function unlock! :args [id]}}})
 
-(defn make-list [tasks]
-  {:title "Inspect External Task"
-   :key "et"
-   :children tasks})
-
-(defn mergefun [{:keys [id] :as task}]
+(defn with-description-and-handler-fn [{:keys [id] :as task}]
   (merge task {:description id
                :manage-fn element
                :manage-args [id]}))
 
-(defn list
+(def external-task-list-handler
+  {:title "Inspect External Task"
+   :key "et"})
+
+(defn list-all
   "Node for listing external tasks"
   ([]
-   (make-root (util/associate (constantly true) mergefun (list-all))))
+   (assoc external-task-list-handler :children (util/build-indexed-map with-description-and-handler-fn (list-all))))
   ([pinst-id]
-   (make-root (util/associate (fn [task] (= (:process-instance-id task) pinst-id))
-                              mergefun
-                              (list-all)))))
+   (assoc external-task-list-handler
+          :children
+          (util/associate #(= (:process-instance-id %) pinst-id)
+                          with-description-and-handler-fn
+                          (list-all)))))

@@ -10,12 +10,12 @@
 (def root
   "Root node."
   {:title "Main Menu"
-   :children {"pd" {:description "List process definitions" :next pdef/list}
-              "pi" {:description "List active process instances" :next pinst/list}
-              "et" {:description "List available external tasks" :next task/list}
-              "dd" {:description "List Decision Definitions" :next ddef/list}}})
+   :children {"pd" {:description "List process definitions" :next pdef/list-all}
+              "pi" {:description "List active process instances" :next pinst/list-all}
+              "et" {:description "List available external tasks" :next task/list-all}
+              "dd" {:description "List Decision Definitions" :next ddef/list-all}}})
 
 (defn -main [& args]
   (cond
-    (empty? args) (display/print-node ui/root)
+    (empty? args) (display/print-node root)
     :default (traverse/find-node root args)))
