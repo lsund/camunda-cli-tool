@@ -60,10 +60,7 @@
    :children {"s" {:description "Start process instance with default variables"
                    :function start-process!
                    :args [key]}
-              "v" {:description "Start process instance with given variables"
-                   :function read-variables-and-start-process!
-                   :args [key]}
-              "cut" {:description "Start process instance remaining arguments"
+              "v" {:description "Start process with given arguments"
                      :function start-process!
                      :args [key]}
               "pi" {:description "List Process Instances for this definition"

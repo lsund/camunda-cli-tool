@@ -62,6 +62,6 @@
                               mergefun
                               (list-all))))
   ([definition-id]
-   (make-root (util/associate (fn [pinst] (= (:definition-id pinst) definition-id))
+   (make-root (util/associate #(= (:definition-id %) definition-id)
                               mergefun
                               (list-all)))))
