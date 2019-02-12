@@ -54,15 +54,15 @@
         (swap! variables assoc k {:value v :type "String"})))
     (start-process! key @variables)))
 
-(defn manage [id key name]
+(defn element [id key name]
   "Node for managing a specific process definition."
   {:title (str "Manage Process Definition: " name)
    :children {"s" {:description "Start process instance with default variables"
                    :function start-process!
                    :args [key]}
               "v" {:description "Start process with given arguments"
-                     :function start-process!
-                     :args [key]}
+                   :function start-process!
+                   :args [key]}
               "pi" {:description "List Process Instances for this definition"
                     :next pinst/root
                     :args [id]}
@@ -73,15 +73,15 @@
                     :function delete-process!
                     :args [:all key]}}})
 
-(defn make-root [instances]
+(defn make-list [instances]
   {:title "Select Process Definition"
    :key "pd"
    :children instances})
 
 (defn mergefun [{:keys [id key name version] :as pdef}]
   (merge pdef {:description (str name " [version: " version "]")
-               :next manage :args [id key name]}))
+               :manage-fn element :manage-args [id key name]}))
 
-(defn root []
+(defn list []
   "Node for listing process definitions."
-  (make-root (util/associate (constantly true) mergefun (list-most-recent))))
+  (make-list (util/associate (constantly true) mergefun (list-most-recent))))

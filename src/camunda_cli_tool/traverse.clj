@@ -17,7 +17,6 @@
        (map (fn [[x y]] [(keyword x) y]))
        (into {})))
 
-;; TODO rename args & args here
 (defn find-node [node [arg & args]]
   "Takes a node and a list of string arguments."
   (let [next-node-fn (get-in node [:children arg :next])
@@ -31,14 +30,14 @@
                        (find-node next-node args)
                        next-node))
       leaf-fn (let [result (apply leaf-fn next-node-args)]
-            (println "Result: " (:value result))
-            result)
-      :default (if-let [child (try-find-child-node arg (:children node))]
-                 (let [next-node-fn (:next child)]
-                   (display/print-node (apply next-node-fn (:args child)))
+                (println "Result: " (:value result))
+                result)
+      :default (if-let [{:keys [manage-fn manage-args]} (try-find-child-node arg (:children node))]
+                 (let [new-root (apply manage-fn manage-args)]
+                   (display/print-node new-root)
                    (if args
-                     (find-node (apply next-node-fn (:args child)) args)
-                     (apply next-node-fn (:args child))))
+                     (find-node new-root args)
+                     new-root))
                  (do
                    (display/print-menu-item "Unknown command: " arg)
                    (flush))))))

@@ -15,22 +15,22 @@
   {:value (:status (http/rest-post (str rest-endpoint "/" id "/" "unlock") {}))
    :rebound false})
 
-(defn manage [id]
+(defn element [id]
   "Node for managing a specific external task"
   {:title (str "Manage external task: " id)
    :children {"u" {:description "Unlock task" :function unlock! :args [id]}}})
 
-(defn make-root [tasks]
+(defn make-list [tasks]
   {:title "Inspect External Task"
    :key "et"
    :children tasks})
 
 (defn mergefun [{:keys [id] :as task}]
   (merge task {:description id
-               :next manage
-               :args [id]}))
+               :manage-fn element
+               :manage-args [id]}))
 
-(defn root
+(defn list
   "Node for listing external tasks"
   ([]
    (make-root (util/associate (constantly true) mergefun (list-all))))

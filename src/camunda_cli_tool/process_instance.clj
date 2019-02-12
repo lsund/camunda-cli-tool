@@ -34,7 +34,7 @@
     {:value (str "\n" (pprint/write (cheshire/parse-string json true) :stream nil))
      :rebound false}))
 
-(defn manage [id desc]
+(defn element [id desc]
   "Node for managing a specific process instance."
   {:title (str "Manage Process Instance: " desc)
    :children {"s" {:description "Stop Process Instance" :function stop-process! :args [id]}
@@ -43,7 +43,7 @@
                     :next task/root
                     :args [id]}}})
 
-(defn make-root [instances]
+(defn make-list [instances]
   {:title "Inspect Process"
    :key "pi"
    :children instances})
@@ -51,11 +51,11 @@
 (defn mergefun [{:keys [id definition-name start-time] :as pinst}]
   (let [desc (str id " [" start-time "] " definition-name )]
     (merge pinst {:description desc
-                  :next manage :args [id desc]})))
+                  :manage-fn element :manage-args [id desc]})))
 
-(defn root
+(defn list
   "Node for listing process instances. If no arguments are given, return a node with all process
-  instances.  If one argument is given, then filter on process instances matching this
+  instances. If one argument is given, then filter on process instances matching this
   definition-id."
   ([]
    (make-root (util/associate (constantly true)
