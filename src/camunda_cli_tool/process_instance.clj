@@ -3,6 +3,7 @@
             [clojure.set :refer [rename-keys]]
             [clojure.pprint :as pprint]
             [cheshire.core :as cheshire]
+            [camunda-cli-tool.entity :as entity]
             [camunda-cli-tool.http :as http]
             [camunda-cli-tool.util :as util]
             [camunda-cli-tool.external-task :as task]
@@ -18,7 +19,7 @@
            {:start-time (get history "startTime")
             :definition-name (get history "processDefinitionName")})))
 
-(defn list-all-active-instances []
+(defn active []
   (let [active (map (partial util/json->instance-map [:id :definitionId])
                     (j/read-str (:body (http/rest-get rest-endpoint))))]
     (map add-historic-data active)))
@@ -34,9 +35,8 @@
     {:value (str "\n" (pprint/write (cheshire/parse-string json true) :stream nil))
      :rebound false}))
 
-(defn element [id desc]
-  "Node for managing a specific process instance."
-  {:title (str "Manage Process Instance: " desc)
+(defn handler [{:keys [id]}]
+  {:title (str "Inspect process: " id)
    :children {"s" {:description "Stop Process Instance" :function stop-process! :args [id]}
               "v" {:description "Inspect variables" :function inspect-variables :args [id]}
               "et" {:description "List external tasks for this instance "
@@ -47,19 +47,21 @@
   {:title "Inspect Process"
    :key "pi"})
 
-(defn with-description-and-handler-fn [{:keys [id definition-name start-time] :as pinst}]
-  (let [desc (str id " [" start-time "] " definition-name )]
-    (merge pinst {:description desc
-                  :manage-fn element :manage-args [id desc]})))
+(defn description [{:keys [id definition-name start-time]}]
+  (str id " [" start-time "] " definition-name ))
 
 (defn list-all
   "Node for listing process instances. If no arguments are given, return a node with all process
   instances. If one argument is given, then filter on process instances matching this
   definition-id."
   ([]
-   (assoc process-list-handler :children (util/build-indexed-map with-description-and-handler-fn
-                                                                 (list-all-active-instances))))
+   (entity/all "Inspect Process"
+               description
+               handler
+               (active)))
   ([definition-id]
-   (assoc process-list-handler :children (util/build-indexed-map #(= (:definition-id %) definition-id)
-                                                                 with-description-and-handler-fn
-                                                                 (list-all-active-instances)))))
+   (entity/all "Inspect Process"
+               description
+               handler
+               (active)
+               #(= (:definition-id %) definition-id))))

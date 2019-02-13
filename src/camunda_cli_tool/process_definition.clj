@@ -4,18 +4,12 @@
             [camunda-cli-tool.http :as http]
             [camunda-cli-tool.process-instance :as pinst]
             [camunda-cli-tool.util :as util]
+            [camunda-cli-tool.entity :as entity]
             [clojure.string :as string]
             [medley.core :refer [map-keys distinct-by]]))
 
-(def rest-endpoint "process-definition")
-
-(defn list-all-process-definitions []
-  (if-let [body (:body (http/rest-get rest-endpoint))]
-    (map (partial util/json->instance-map [:id :key :name :version])
-         (j/read-str body))))
-
-(defn list-most-recent-process-definitions []
-  (if-let [body (:body (http/rest-get rest-endpoint {:latestVersion true}))]
+(defn most-recent []
+  (if-let [body (:body (http/rest-get "process-definition" {:latestVersion true}))]
     (map (partial util/json->instance-map [:id :key :name :version])
          (j/read-str body))))
 
@@ -24,7 +18,7 @@
    (start-process! key (config/process-variables key)))
   ([key variables]
    (try
-     (let [resp (http/rest-post (str rest-endpoint
+     (let [resp (http/rest-post (str "process-definition"
                                      "/" "key"
                                      "/" key
                                      "/" "start")
@@ -37,12 +31,12 @@
 (defmulti delete-process! first)
 
 (defmethod delete-process! :single [_ id]
-  (let [resp (http/rest-delete (str rest-endpoint "/" id) {:cascade true})]
+  (let [resp (http/rest-delete (str "process-definition") {:cascade true})]
     {:value (:status resp)
      :rebound true}))
 
 (defmethod delete-process! :all [_ key]
-  (let [resp (http/rest-delete (str rest-endpoint "/" "key" "/" key "/" "delete"))]
+  (let [resp (http/rest-delete (str "process-definition"))]
     {:value (:status resp)
      :rebound true}))
 
@@ -54,9 +48,9 @@
         (swap! variables assoc k {:value v :type "String"})))
     (start-process! key @variables)))
 
-(defn handler [id key name]
+(defn handler [{:keys [id key name]}]
   "Node for managing a specific process definition."
-  {:title (str "Manage Process Definition: " name)
+  {:title (str "Manage " name)
    :children {"s" {:description "Start process instance with default variables"
                    :function start-process!
                    :args [key]}
@@ -73,12 +67,12 @@
                     :function delete-process!
                     :args [:all key]}}})
 
-(defn with-description-and-handler-fn [{:keys [id key name version] :as pdef}]
-  (merge pdef {:description (str name " [version: " version "]")
-               :handler-fn handler :handler-args [id key name]}))
+(defn description [{:keys [name version]}]
+  (str name " [version: " version "]"))
 
 (defn list-all []
   "Node for listing process definitions."
-  {:title "Select Process Definition"
-   :key "pd"
-   :children (util/build-indexed-map with-description-and-handler-fn (list-most-recent-process-definitions))})
+  (entity/all "Select Process Definition"
+               description
+               handler
+               most-recent))

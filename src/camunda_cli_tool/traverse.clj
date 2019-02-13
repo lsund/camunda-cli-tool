@@ -2,12 +2,18 @@
   (:require [clojure.string :as string]
             [camunda-cli-tool.display :as display]))
 
-(defn try-find-child-node [k children]
-  "The first child in children for which k matches a substring of its :name."
+(defn find-child-node-by-name [children s]
+  "The first child in children for which `s` matches a substring of its :name."
   (some->> children
            (filter (fn [[_ child]]
                      (when-let [last-part (some-> child :description string/lower-case (string/split #"/") last)]
-                       (re-find (re-pattern k) last-part))))
+                       (re-find (re-pattern s) last-part))))
+           first
+           second))
+
+(defn find-nth-child-node [children n]
+  (some->> children
+           (filter (fn [[i _]] (= i n)))
            first
            second))
 
@@ -21,7 +27,9 @@
   "Takes a node and a list of string arguments."
   (let [next-node-fn (get-in node [:children arg :next])
         next-node-args (get-in node [:children arg :args])
-        leaf-fn (get-in node [:children arg :function])]
+        leaf-fn (get-in node [:children arg :function])
+        child-node-by-name (find-child-node-by-name (:children node) arg)
+        child-node-by-id (find-nth-child-node (:children node) arg)]
     (cond
       (= arg "v") (leaf-fn (first next-node-args) (cli-args->map args))
       next-node-fn (let [next-node (apply next-node-fn next-node-args)]
@@ -32,15 +40,25 @@
       leaf-fn (let [result (apply leaf-fn next-node-args)]
                 (println "Result: " (:value result))
                 result)
-      :default (if-let [{:keys [handler-fn handler-args]} (try-find-child-node arg (:children node))]
-                 (let [new-root (apply handler-fn handler-args)]
-                   (display/print-node new-root)
-                   (if args
-                     (find-node new-root args)
-                     new-root))
-                 (do
-                   (display/print-menu-item "Unknown command: " arg)
-                   (flush))))))
+
+      child-node-by-name (let [{:keys [handler-fn handler-args]} child-node-by-name
+                               new-root (apply handler-fn handler-args)]
+                           (do
+                             (display/print-node new-root)
+                             (if args
+                               (find-node new-root args)
+                               new-root)))
+
+      child-node-by-id (let [{:keys [handler-fn handler-args]} child-node-by-id
+                             new-root (apply handler-fn handler-args)]
+                         (do
+                           (display/print-node new-root)
+                           (if args
+                             (find-node new-root args)
+                             new-root)))
+      :default (do
+                 (display/print-menu-item "Unknown command: " arg)
+                 (flush)))))
 
 (defn forward-node [k node nodes]
   "Tries to advance down the action tree.
