@@ -21,7 +21,7 @@
                     :next entity/all
                     :args ["Inspect process instance"
                            pinst/description
-                           pinst/children
+                           pinst/handler
                            pinst/active]}
               "et" {:description "List available external tasks" :next task/list-all}
               "dd" {:description "List Decision Definitions" :next ddef/list-all}}})
