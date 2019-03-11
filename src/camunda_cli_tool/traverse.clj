@@ -19,7 +19,7 @@
 
 (defn- cli-args->map [xs]
   (->> xs
-       (map #(string/split % #":"))
+       (partition-all 2)
        (map (fn [[x y]] [(keyword x) y]))
        (into {})))
 
